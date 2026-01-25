@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trendy Production | المنصة المتكاملة</title>
+    <title>Trendy Production - متجر اشتراكات كانفا</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<link rel="icon" type="image/png" href="./logo.png">   <meta name="description" content="متجر تريندي برودكشن - أقوى عروض Canva Pro والخدمات الرقمية">
-<meta name="keywords" content="اشتراكات, Canva, تريندي, Trendy Production, متجر رقمي">
+    <link rel="icon" type="image/png" href="./logo.png">
+    <meta name="description" content="متجر تريندي برودكشن - أقوى عروض Canva Pro والخدمات الرقمية">
+    <meta name="keywords" content="اشتراكات, Canva, تريندي, Trendy Production, متجر رقمي">
+    
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 
@@ -85,7 +87,7 @@
             background: #25d366; color: white; padding: 10px; text-decoration: none;
             border-radius: 8px; margin-top: 10px; font-weight: bold; font-size: 0.9rem;
         }
-
+        
         #footer-section { display: none; background: rgba(0,0,0,0.8); padding: 40px 20px; border-top: 1px solid #222; text-align: center; }
     </style>
 </head>
@@ -119,7 +121,7 @@
 
     <div id="main-content" style="display:none;">
         <h2 style="text-align:center; margin-top:30px;">عروض المتجر الحصرية 🔥</h2>
-
+        
         <div class="cards-container">
             <div class="card" style="border-color:#ff4757;">
                 <div>
@@ -216,7 +218,7 @@
             document.getElementById('cart-total').innerText = `الإجمالي: ${cart.reduce((s, i) => s + i.price, 0)} EGP`;
         }
         function showCart() { document.getElementById('cart-modal').style.display = 'block'; }
-        function showOrders() {
+        function showOrders() { 
             document.getElementById('orders-modal').style.display = 'block';
             document.getElementById('orders-list').innerHTML = orders.length ? orders.map(o => `<div style="background:#1a1f3c; padding:10px; border-radius:10px; margin-bottom:10px;">${o.date}<br>${o.items}<br><b>${o.total} EGP</b></div>`).join('') : "لا يوجد طلبات.";
         }
