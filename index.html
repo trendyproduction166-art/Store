@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trendy Production | المنصة المتكاملة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+
+    <style>
+        :root {
+            --primary-bg: #050a18;
+            --accent-purple: #9d50bb;
+            --accent-blue: #00d2ff;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --gold-color: #ffd700;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; background: radial-gradient(circle at top, #1a1f3c, var(--primary-bg));
+            color: white; min-height: 100vh;
+        }
+
+        /* Navbar */
+        #user-nav {
+            display: none; justify-content: space-between; align-items: center;
+            padding: 12px 5%; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--accent-blue);
+        }
+
+        .nav-icons { display: flex; gap: 20px; align-items: center; }
+        .cart-icon { position: relative; cursor: pointer; font-size: 1.3rem; }
+        .cart-count {
+            position: absolute; top: -8px; right: -8px; background: #ff4757;
+            color: white; font-size: 10px; padding: 2px 7px; border-radius: 50%;
+        }
+
+        /* Modals */
+        .modal {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto;
+        }
+        .modal-content {
+            background: #0a0f1e; margin: 50px auto; padding: 25px; border: 1px solid var(--accent-blue);
+            width: 90%; max-width: 500px; border-radius: 20px;
+        }
+
+        /* Login Card */
+        .login-card {
+            background: rgba(10, 15, 30, 0.9); border: 1px solid var(--accent-blue);
+            padding: 60px 40px; border-radius: 20px; width: 90%; max-width: 400px;
+            margin: 100px auto; text-align: center; box-shadow: 0 0 30px rgba(0, 210, 255, 0.1);
+        }
+
+        .btn-google {
+            width: 100%; padding: 15px; border-radius: 12px; border: none;
+            background: #fff; color: #000; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: 0.3s; font-size: 1.1rem;
+        }
+
+        /* Cards */
+        .cards-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; padding: 30px 20px; }
+        .card {
+            background: var(--glass-bg); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px; padding: 25px; width: 280px; text-align: center; transition: 0.3s;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .card:hover { border-color: var(--accent-blue); transform: translateY(-5px); }
+
+        .btn-add-cart {
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+            color: white; border: none; padding: 12px; border-radius: 10px;
+            width: 100%; cursor: pointer; font-weight: bold; margin-top: 15px;
+        }
+
+        /* Info Section */
+        .info-section { background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; margin-top: 20px; border: 1px dashed #444; text-align: center; }
+        .whatsapp-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: #25d366; color: white; padding: 10px; text-decoration: none;
+            border-radius: 8px; margin-top: 10px; font-weight: bold; font-size: 0.9rem;
+        }
+
+        #footer-section { display: none; background: rgba(0,0,0,0.8); padding: 40px 20px; border-top: 1px solid #222; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <nav id="user-nav">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img id="user-photo" style="width:35px; border-radius:50%; border:1px solid var(--accent-blue);" src="">
+            <span id="user-name" style="font-weight:bold; font-size:14px;"></span>
+        </div>
+        <div class="nav-icons">
+            <div onclick="showOrders()" style="cursor:pointer; font-size:0.9rem;"><i class="fas fa-history"></i> طلباتي</div>
+            <div class="cart-icon" onclick="showCart()">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="cart-count" class="cart-count">0</span>
+            </div>
+            <button onclick="logout()" style="background:none; border:1px solid #ff4757; color:#ff4757; border-radius:8px; padding:5px 12px; cursor:pointer; font-weight:bold;">خروج</button>
+        </div>
+    </nav>
+
+    <div id="login-area">
+        <div class="login-card">
+            <h1 style="background: linear-gradient(to right, #fff, var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px;">TRENDY PRODUCTION</h1>
+            <p style="color:#ccc; margin-bottom: 40px;">سجل دخولك لاستكشاف أقوى العروض</p>
+            <button class="btn-google" onclick="loginWithGoogle()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="22">
+                الدخول بواسطة Gmail
+            </button>
+        </div>
+    </div>
+
+    <div id="main-content" style="display:none;">
+        <h2 style="text-align:center; margin-top:30px;">عروض المتجر الحصرية 🔥</h2>
+
+        <div class="cards-container">
+            <div class="card" style="border-color:#ff4757;">
+                <div>
+                    <div style="background:#ff4757; color:white; font-size:11px; border-radius:10px; padding:3px 12px; display:inline-block; font-weight:bold;">عرض لفترة محدودة</div>
+                    <h3 style="margin:15px 0;">Canva Pro (Promo Gold)</h3>
+                    <div style="font-size:28px; font-weight:bold;">100 EGP</div>
+                    <p style="font-size:0.9rem; color:#ccc;">اشتراك كامل بجميع مميزات جولد بسعر مخفض</p>
+                </div>
+                <button class="btn-add-cart" onclick="addToCart('Canva Promo Gold', 100)">إضافة للسلة <i class="fas fa-cart-plus"></i></button>
+            </div>
+
+            <div class="card">
+                <div>
+                    <div style="background:var(--gold-color); color:black; font-size:11px; border-radius:10px; padding:3px 12px; display:inline-block; font-weight:bold;">باقة الجولد الأساسية</div>
+                    <h3 style="margin:15px 0;">Canva Pro (Gold)</h3>
+                    <div style="font-size:28px; font-weight:bold;">150 EGP</div>
+                    <p style="font-size:0.9rem; color:#ccc;">الخيار الأكثر استقراراً بضمان تريندي</p>
+                </div>
+                <button class="btn-add-cart" onclick="addToCart('Canva Gold Standard', 150)">إضافة للسلة <i class="fas fa-cart-plus"></i></button>
+            </div>
+
+            <div class="card" style="border: 1px dashed var(--accent-blue); opacity: 0.9;">
+                <div style="margin-top:20px;">
+                    <i class="fas fa-magic" style="font-size: 2.5rem; color: var(--accent-blue); margin-bottom:15px;"></i>
+                    <h3 style="color: #fff;">انتظروا إضافات أخرى قريباً</h3>
+                    <p style="font-size:0.85rem; color:#aaa;">نعمل على توفير اشتراكات (Netflix, Spotify, ChatGPT) بأفضل الأسعار</p>
+                </div>
+                <div style="background: rgba(0, 210, 255, 0.1); padding: 10px; border-radius: 10px; margin-top: 20px; font-weight: bold; color: var(--accent-blue);">قريباً جداً 🚀</div>
+            </div>
+        </div>
+
+        <div style="max-width: 800px; margin: 40px auto; padding: 0 20px;">
+            <div class="info-section">
+                <h3><i class="fas fa-wallet"></i> بيانات التحويل (فودافون كاش)</h3>
+                <p style="color:var(--accent-blue); font-size:1.8rem; font-weight:bold; margin:10px 0;">01008063749</p>
+                <p style="font-size:0.85rem; color:#aaa;">صور الإيصال وأرسله للدعم لتفعيل حسابك فوراً</p>
+            </div>
+        </div>
+    </div>
+
+    <footer id="footer-section">
+        <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+            <div>
+                <h4><i class="fas fa-headset"></i> الدعم الفني</h4>
+                <a href="https://wa.me/201014804695" class="whatsapp-btn">دعم فني 1</a>
+                <a href="https://wa.me/201014806596" class="whatsapp-btn">دعم فني 2</a>
+            </div>
+            <div>
+                <h4><i class="fas fa-building"></i> الإدارة والاستفسارات</h4>
+                <a href="https://wa.me/201008063749" class="whatsapp-btn" style="background:#34495e;">تواصل مع الإدارة</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="cart-modal" class="modal"><div class="modal-content"><span onclick="closeModals()" style="float:left; cursor:pointer; font-size: 1.5rem;">&times;</span><h3>السلة 🛒</h3><div id="cart-items"></div><div id="cart-total" style="margin:15px 0; font-weight:bold;"></div><button class="btn-add-cart" onclick="checkout()">تأكيد الطلب (واتساب)</button></div></div>
+    <div id="orders-modal" class="modal"><div class="modal-content"><span onclick="closeModals()" style="float:left; cursor:pointer; font-size: 1.5rem;">&times;</span><h3>طلباتي 📂</h3><div id="orders-list"></div></div></div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCGfQ35NTyNysJqeHcMGlaWQYqQ80_ecVE",
+            authDomain: "trendy-production-c6d33.firebaseapp.com",
+            projectId: "trendy-production-c6d33",
+            storageBucket: "trendy-production-c6d33.firebasestorage.app",
+            messagingSenderId: "991761563640",
+            appId: "1:991761563640:web:2867e0a2cd16df78d3a00d"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+
+        let cart = [];
+        let orders = JSON.parse(localStorage.getItem('trendy_orders')) || [];
+
+        function loginWithGoogle() { auth.signInWithPopup(provider).then(() => location.reload()); }
+        function logout() { auth.signOut().then(() => location.reload()); }
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('login-area').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+                document.getElementById('user-nav').style.display = 'flex';
+                document.getElementById('footer-section').style.display = 'block';
+                document.getElementById('user-name').innerText = user.displayName;
+                document.getElementById('user-photo').src = user.photoURL;
+            }
+        });
+
+        function addToCart(name, price) { cart.push({name, price}); updateCartUI(); alert("تمت الإضافة للسلة!"); }
+        function updateCartUI() {
+            document.getElementById('cart-count').innerText = cart.length;
+            document.getElementById('cart-items').innerHTML = cart.map((item, i) => `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom: 1px solid #222;"><span>${item.name}</span><span>${item.price} EGP <i class="fas fa-trash" onclick="cart.splice(${i},1);updateCartUI();" style="color:red; cursor:pointer;"></i></span></div>`).join('');
+            document.getElementById('cart-total').innerText = `الإجمالي: ${cart.reduce((s, i) => s + i.price, 0)} EGP`;
+        }
+        function showCart() { document.getElementById('cart-modal').style.display = 'block'; }
+        function showOrders() {
+            document.getElementById('orders-modal').style.display = 'block';
+            document.getElementById('orders-list').innerHTML = orders.length ? orders.map(o => `<div style="background:#1a1f3c; padding:10px; border-radius:10px; margin-bottom:10px;">${o.date}<br>${o.items}<br><b>${o.total} EGP</b></div>`).join('') : "لا يوجد طلبات.";
+        }
+        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+        function checkout() {
+            if(!cart.length) return;
+            const total = cart.reduce((s, i) => s + i.price, 0);
+            const items = cart.map(i => i.name).join(' + ');
+            orders.unshift({date: new Date().toLocaleString('ar-EG'), items, total});
+            localStorage.setItem('trendy_orders', JSON.stringify(orders));
+            window.open(`https://wa.me/201008063749?text=طلب جديد من: ${auth.currentUser.displayName}%0Aالمنتجات: ${items}%0Aالإجمالي: ${total} EGP`);
+            cart = []; updateCartUI(); closeModals();
+        }
+    </script>
+</body>
+</html>
