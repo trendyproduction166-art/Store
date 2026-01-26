@@ -3,234 +3,669 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trendy Production - متجر اشتراكات كانفا</title>
+    <title>Trendy Production - Pro v7.5</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="icon" type="image/png" href="./logo.png">
-    <meta name="description" content="متجر تريندي برودكشن - أقوى عروض Canva Pro والخدمات الرقمية">
-    <meta name="keywords" content="اشتراكات, Canva, تريندي, Trendy Production, متجر رقمي">
-    
+
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
 
     <style>
         :root {
-            --primary-bg: #050a18;
-            --accent-purple: #9d50bb;
-            --accent-blue: #00d2ff;
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --gold-color: #ffd700;
+            --bg: #050a18;
+            --blue: #00d2ff;
+            --purple: #9d50bb;
+            --glass: rgba(255, 255, 255, 0.08);
+            --gold: #ffd700;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0; background: radial-gradient(circle at top, #1a1f3c, var(--primary-bg));
-            color: white; min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+            background: var(--bg);
+            color: white;
+            direction: rtl;
+            overflow-x: hidden;
         }
 
-        /* Navbar */
-        #user-nav {
-            display: none; justify-content: space-between; align-items: center;
-            padding: 12px 5%; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
-            position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--accent-blue);
+        /* Sidebar System */
+        .sidebar {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 260px;
+            height: 100%;
+            background: #0a0f1e;
+            border-right: 1px solid var(--blue);
+            transition: 0.3s ease-in-out;
+            z-index: 9999;
+            padding: 20px;
         }
 
-        .nav-icons { display: flex; gap: 20px; align-items: center; }
-        .cart-icon { position: relative; cursor: pointer; font-size: 1.3rem; }
-        .cart-count {
-            position: absolute; top: -8px; right: -8px; background: #ff4757;
-            color: white; font-size: 10px; padding: 2px 7px; border-radius: 50%;
+        .sidebar.active { left: 0; }
+
+        .sidebar-item {
+            padding: 15px;
+            margin: 8px 0;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.3s;
+            background: rgba(255,255,255,0.02);
         }
 
-        /* Modals */
-        .modal {
-            display: none; position: fixed; z-index: 2000; left: 0; top: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto;
-        }
-        .modal-content {
-            background: #0a0f1e; margin: 50px auto; padding: 25px; border: 1px solid var(--accent-blue);
-            width: 90%; max-width: 500px; border-radius: 20px;
+        .sidebar-item:hover {
+            background: var(--glass);
+            color: var(--blue);
+            transform: scale(1.02);
         }
 
-        /* Login Card */
-        .login-card {
-            background: rgba(10, 15, 30, 0.9); border: 1px solid var(--accent-blue);
-            padding: 60px 40px; border-radius: 20px; width: 90%; max-width: 400px;
-            margin: 100px auto; text-align: center; box-shadow: 0 0 30px rgba(0, 210, 255, 0.1);
+        .menu-toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            font-size: 26px;
+            cursor: pointer;
+            z-index: 10000;
+            color: var(--blue);
+            background: #0a0f1e;
+            padding: 5px 12px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
 
-        .btn-google {
-            width: 100%; padding: 15px; border-radius: 12px; border: none;
-            background: #fff; color: #000; font-weight: bold; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            transition: 0.3s; font-size: 1.1rem;
+        /* Home User Header */
+        .home-user-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--glass);
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            width: fit-content;
+            margin: 0 0 30px auto;
+            transition: 0.3s;
         }
 
-        /* Cards */
-        .cards-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; padding: 30px 20px; }
+        .home-user-card:hover {
+            background: rgba(0, 210, 255, 0.1);
+            border-color: var(--blue);
+        }
+
+        .home-user-card img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--blue);
+        }
+
+        /* Content Layout */
+        .content-section {
+            display: none;
+            padding: 80px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         .card {
-            background: var(--glass-bg); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px; padding: 25px; width: 280px; text-align: center; transition: 0.3s;
-            display: flex; flex-direction: column; justify-content: space-between;
-        }
-        .card:hover { border-color: var(--accent-blue); transform: translateY(-5px); }
-
-        .btn-add-cart {
-            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
-            color: white; border: none; padding: 12px; border-radius: 10px;
-            width: 100%; cursor: pointer; font-weight: bold; margin-top: 15px;
+            background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 20px;
+            width: 280px;
+            text-align: center;
+            position: relative;
+            transition: 0.3s;
         }
 
-        /* Info Section */
-        .info-section { background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; margin-top: 20px; border: 1px dashed #444; text-align: center; }
-        .whatsapp-btn {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            background: #25d366; color: white; padding: 10px; text-decoration: none;
-            border-radius: 8px; margin-top: 10px; font-weight: bold; font-size: 0.9rem;
+        .card:hover { transform: translateY(-5px); border-color: var(--blue); }
+
+        .promo { border: 2px solid #ff4757; }
+        .promo::after {
+            content: "عرض خاص";
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: #ff4757;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 11px;
         }
-        
-        #footer-section { display: none; background: rgba(0,0,0,0.8); padding: 40px 20px; border-top: 1px solid #222; text-align: center; }
+
+        .btn-pay {
+            background: linear-gradient(45deg, var(--blue), var(--purple));
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            width: 100%;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .btn-delete-admin {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+
+        /* Forum Styling */
+        .status-card {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-right: 4px solid var(--blue);
+            position: relative;
+        }
+
+        .admin-post {
+            border: 2px solid var(--gold) !important;
+            background: rgba(255, 215, 0, 0.05) !important;
+        }
+
+        .pinned-post {
+            border-right: 6px solid var(--gold) !important;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);
+        }
+
+        .pin-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: var(--gold);
+            font-size: 18px;
+        }
+
+        .reply-box {
+            margin-right: 40px;
+            border-right: 2px solid var(--blue);
+            padding: 10px 15px;
+            font-size: 13px;
+            background: rgba(255,255,255,0.03);
+            margin-top: 8px;
+            border-radius: 8px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #1a1f3c;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        footer {
+            background: #000;
+            padding: 40px 20px;
+            text-align: center;
+            border-top: 1px solid #222;
+            margin-top: 50px;
+        }
+
+        .wa-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #25d366;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 5px;
+            font-weight: bold;
+        }
+
+        .admin-action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 4px;
+            font-weight: bold;
+        }
+
+        /* New Admin Styles */
+        .admin-user-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--blue);
+            object-fit: cover;
+        }
+
+        #search-user-input {
+            border: 1px solid var(--blue);
+            margin-bottom: 20px;
+            background: rgba(0, 210, 255, 0.05);
+        }
     </style>
 </head>
 <body>
 
-    <nav id="user-nav">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <img id="user-photo" style="width:35px; border-radius:50%; border:1px solid var(--accent-blue);" src="">
-            <span id="user-name" style="font-weight:bold; font-size:14px;"></span>
+    <div class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+
+    <nav class="sidebar" id="sidebar">
+        <h2 style="color: var(--blue); text-align: center; margin-bottom: 30px;">Trendy Prod.</h2>
+        <div class="sidebar-item" onclick="openPage('home')"><i class="fas fa-home"></i> الرئيسية</div>
+        <div class="sidebar-item" onclick="openPage('profile')"><i class="fas fa-user-edit"></i> الملف الشخصي</div>
+        <div class="sidebar-item" onclick="openPage('cart')"><i class="fas fa-shopping-basket"></i> السلة</div>
+        <div class="sidebar-item" onclick="openPage('wait')"><i class="fas fa-spinner"></i> الانتظار</div>
+        <div class="sidebar-item" onclick="openPage('history')"><i class="fas fa-file-invoice-dollar"></i> فواتير سابقة</div>
+        <div class="sidebar-item" onclick="openPage('forum')"><i class="fas fa-comments"></i> المنتدى والاقتراحات</div>
+        <div class="sidebar-item" onclick="openPage('about')"><i class="fas fa-info-circle"></i> عن Trendy</div>
+
+        <div id="admin-zone" style="display:none; border-top: 1px solid var(--gold); margin-top: 20px; padding-top: 15px;">
+            <p style="color:var(--gold); font-size:12px; margin-bottom:10px; letter-spacing: 1px;">لوحة التحكم</p>
+            <div class="sidebar-item" onclick="openPage('adm-add')"><i class="fas fa-plus-square"></i> إضافة منتج</div>
+            <div class="sidebar-item" onclick="openPage('adm-users')"><i class="fas fa-users"></i> قاعدة المستخدمين</div>
         </div>
-        <div class="nav-icons">
-            <div onclick="showOrders()" style="cursor:pointer; font-size:0.9rem;"><i class="fas fa-history"></i> طلباتي</div>
-            <div class="cart-icon" onclick="showCart()">
-                <i class="fas fa-shopping-cart"></i>
-                <span id="cart-count" class="cart-count">0</span>
-            </div>
-            <button onclick="logout()" style="background:none; border:1px solid #ff4757; color:#ff4757; border-radius:8px; padding:5px 12px; cursor:pointer; font-weight:bold;">خروج</button>
-        </div>
+
+        <button onclick="logout()" style="width:100%; margin-top:30px; padding:12px; background:#ff4757; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">تسجيل الخروج</button>
     </nav>
 
-    <div id="login-area">
-        <div class="login-card">
-            <h1 style="background: linear-gradient(to right, #fff, var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px;">TRENDY PRODUCTION</h1>
-            <p style="color:#ccc; margin-bottom: 40px;">سجل دخولك لاستكشاف أقوى العروض</p>
-            <button class="btn-google" onclick="loginWithGoogle()">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="22">
-                الدخول بواسطة Gmail
-            </button>
-        </div>
+    <div id="login-box" style="text-align:center; padding-top:25vh;">
+        <h1 style="font-size: 3.5rem; letter-spacing: 5px; color: var(--blue); margin-bottom: 0;">TRENDY</h1>
+        <p style="margin-bottom: 35px; color: #888; font-weight: 300; letter-spacing: 2px;">PRODUCTION SERVICES</p>
+        <button onclick="login()" style="padding:16px 50px; border-radius:50px; cursor:pointer; font-weight:bold; background:#fff; border:none; box-shadow: 0 10px 30px rgba(0,0,0,0.4); transition: 0.3s; font-size: 16px;">
+            <i class="fab fa-google" style="margin-left: 10px; color: #db4437;"></i> الدخول بواسطة Google
+        </button>
     </div>
 
-    <div id="main-content" style="display:none;">
-        <h2 style="text-align:center; margin-top:30px;">عروض المتجر الحصرية 🔥</h2>
-        
-        <div class="cards-container">
-            <div class="card" style="border-color:#ff4757;">
+    <div id="main-app" style="display:none;">
+
+        <section id="home" class="content-section" style="display:block;">
+            <div class="home-user-card" onclick="openPage('profile')">
+                <img id="head-user-pic" src="https://via.placeholder.com/45">
                 <div>
-                    <div style="background:#ff4757; color:white; font-size:11px; border-radius:10px; padding:3px 12px; display:inline-block; font-weight:bold;">عرض لفترة محدودة</div>
-                    <h3 style="margin:15px 0;">Canva Pro (Promo Gold)</h3>
-                    <div style="font-size:28px; font-weight:bold;">100 EGP</div>
-                    <p style="font-size:0.9rem; color:#ccc;">اشتراك كامل بجميع مميزات جولد بسعر مخفض</p>
+                    <div id="head-user-name" style="font-weight: bold; font-size: 14px;">تحميل...</div>
+                    <small style="color: var(--blue); font-size: 10px;">عرض الملف الشخصي</small>
                 </div>
-                <button class="btn-add-cart" onclick="addToCart('Canva Promo Gold', 100)">إضافة للسلة <i class="fas fa-cart-plus"></i></button>
             </div>
 
-            <div class="card">
-                <div>
-                    <div style="background:var(--gold-color); color:black; font-size:11px; border-radius:10px; padding:3px 12px; display:inline-block; font-weight:bold;">باقة الجولد الأساسية</div>
-                    <h3 style="margin:15px 0;">Canva Pro (Gold)</h3>
-                    <div style="font-size:28px; font-weight:bold;">150 EGP</div>
-                    <p style="font-size:0.9rem; color:#ccc;">الخيار الأكثر استقراراً بضمان تريندي</p>
-                </div>
-                <button class="btn-add-cart" onclick="addToCart('Canva Gold Standard', 150)">إضافة للسلة <i class="fas fa-cart-plus"></i></button>
-            </div>
+            <h2 style="text-align:center; font-size: 2.2rem; margin-bottom: 40px; text-shadow: 0 0 10px var(--blue);">المتجر الرسمي 🛒</h2>
+            <div id="products-grid" style="display:flex; flex-wrap:wrap; gap:25px; justify-content:center;"></div>
+        </section>
 
-            <div class="card" style="border: 1px dashed var(--accent-blue); opacity: 0.9;">
-                <div style="margin-top:20px;">
-                    <i class="fas fa-magic" style="font-size: 2.5rem; color: var(--accent-blue); margin-bottom:15px;"></i>
-                    <h3 style="color: #fff;">انتظروا إضافات أخرى قريباً</h3>
-                    <p style="font-size:0.85rem; color:#aaa;">نعمل على توفير اشتراكات (Netflix, Spotify, ChatGPT) بأفضل الأسعار</p>
-                </div>
-                <div style="background: rgba(0, 210, 255, 0.1); padding: 10px; border-radius: 10px; margin-top: 20px; font-weight: bold; color: var(--accent-blue);">قريباً جداً 🚀</div>
+        <section id="profile" class="content-section" style="text-align:center;">
+            <h2>إعدادات الحساب</h2>
+            <div style="position: relative; width: 140px; margin: 0 auto;">
+                <img id="my-pic" style="width:140px; height:140px; border-radius:50%; border:3px solid var(--blue); object-fit:cover; background: #222;">
+                <button onclick="document.getElementById('pic-input').click()" style="position: absolute; bottom: 5px; right: 5px; background: var(--blue); border: none; width: 40px; height: 40px; border-radius: 50%; color: white; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"><i class="fas fa-camera"></i></button>
             </div>
-        </div>
+            <input type="file" id="pic-input" hidden onchange="uploadProfilePic()">
 
-        <div style="max-width: 800px; margin: 40px auto; padding: 0 20px;">
-            <div class="info-section">
-                <h3><i class="fas fa-wallet"></i> بيانات التحويل (فودافون كاش)</h3>
-                <p style="color:var(--accent-blue); font-size:1.8rem; font-weight:bold; margin:10px 0;">01008063749</p>
-                <p style="font-size:0.85rem; color:#aaa;">صور الإيصال وأرسله للدعم لتفعيل حسابك فوراً</p>
+            <div style="max-width: 400px; margin: 40px auto;">
+                <label style="display: block; text-align: right; margin-bottom: 8px; color: var(--blue);">الاسم الظاهر للمستخدم:</label>
+                <input type="text" id="my-name-input" placeholder="اكتب اسمك الجديد هنا">
+                <button onclick="saveProfileName()" class="btn-pay">حفظ التغييرات الجديدة</button>
             </div>
-        </div>
+        </section>
+
+        <section id="cart" class="content-section">
+            <h2 style="text-align: center;">سلة المشتريات الخاصة بك</h2>
+            <div id="cart-content" style="max-width: 600px; margin: 0 auto;"></div>
+        </section>
+
+        <section id="wait" class="content-section">
+            <h2 style="text-align: center;">طلبات قيد المراجعة ⏳</h2>
+            <div id="wait-list" style="max-width: 600px; margin: 0 auto;"></div>
+        </section>
+
+        <section id="history" class="content-section">
+            <h2 style="text-align: center;">الفواتير التي تم تفعيلها ✅</h2>
+            <div id="history-list" style="max-width: 600px; margin: 0 auto;"></div>
+        </section>
+
+        <section id="forum" class="content-section">
+            <h2 style="text-align: center;">المنتدى والاقتراحات 💬</h2>
+            <div style="background: var(--glass); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                <textarea id="forum-msg" rows="4" placeholder="شاركنا رأيك، اقتراحك، أو استفسارك..."></textarea>
+                <div style="display:flex; gap:12px; align-items: center; margin-top: 10px;">
+                    <label for="forum-img" style="cursor: pointer; background: #1a1f3c; padding: 12px 20px; border-radius: 10px; border: 1px solid #333;"><i class="fas fa-image" style="color: var(--blue);"></i> إرفاق صورة</label>
+                    <input type="file" id="forum-img" accept="image/*" hidden>
+                    <button onclick="postToForum()" class="btn-pay" style="width:180px; margin-top:0; height: 46px;">نشر الآن</button>
+                </div>
+            </div>
+            <div id="forum-list" style="margin-top:40px;"></div>
+        </section>
+
+        <section id="about" class="content-section">
+            <div style="background:var(--glass); padding:40px; border-radius:25px; border:1px solid var(--blue); line-height:1.9; text-align:center;">
+                <h2 style="color:var(--blue); font-size: 2.2rem; margin-bottom: 25px;">أهلاً بيكم في Trendy Production 🚀</h2>
+                <p style="font-size: 17px;">احنا شركة مصرية بدأت بأشخاص هدفهم إنهم يوفروا لك أفضل "Services" في العالم وبأرخص الأسعار، وعشان إحنا عارفين إن خدمات كتير بقى أسعارها غالية أو مش متوفرة في مصر، قررنا نوفرها لكم بجودة عالية وبضمان كامل.</p>
+                <p style="font-size: 17px;">عارفين إن الأسعار بره بقت صعبة وعشان كده قررنا نوفر لك اشتراكات أصلية بأسعار خيالية، وبأمان تام لحسابك، وبإذن الله حلمنا هيكبر بيكم وبثقتكم فينا.</p>
+                <div style="margin-top: 35px; font-weight: bold; color: var(--gold); font-size: 18px; border-top: 1px solid rgba(255,215,0,0.2); padding-top: 20px;">Trendy Production - بنكبر بيكم!</div>
+            </div>
+        </section>
+
+        <section id="adm-add" class="content-section">
+            <h2>إضافة منتج جديد للمتجر</h2>
+            <input type="text" id="p-title" placeholder="اسم المنتج">
+            <input type="number" id="p-price" placeholder="السعر">
+            <textarea id="p-desc" placeholder="وصف المنتج"></textarea>
+            <select id="p-style">
+                <option value="normal">تصميم عادي</option>
+                <option value="promo">عرض خاص (إطار أحمر)</option>
+            </select>
+            <button onclick="publishProduct()" class="btn-pay">تأكيد ونشر</button>
+        </section>
+
+        <section id="adm-users" class="content-section">
+            <h2>لوحة إدارة الأعضاء والطلبات</h2>
+            <input type="text" id="search-user-input" placeholder="🔍 ابحث عن مستخدم بالاسم أو الإيميل..." oninput="loadUsersForAdmin()">
+            <div id="all-users-list"></div>
+        </section>
+
+        <footer>
+            <div style="margin-bottom:30px;">
+                <a href="https://wa.me/201014804695" class="wa-link"><i class="fab fa-whatsapp"></i> دعم فني 1</a>
+                <a href="https://wa.me/201014806596" class="wa-link"><i class="fab fa-whatsapp"></i> دعم فني 2</a>
+                <a href="https://wa.me/201008063749" class="wa-link" style="background:#444;"><i class="fas fa-user-shield"></i> الإدارة</a>
+            </div>
+            <p style="color:#ffd700; font-weight: bold; font-size: 16px;">للدفع عبر فودافون كاش: 01008063749</p>
+            <p style="margin-top: 25px; opacity: 0.5; font-size: 14px;">© 2026 Trendy Production. All Rights Reserved.</p>
+        </footer>
     </div>
-
-    <footer id="footer-section">
-        <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
-            <div>
-                <h4><i class="fas fa-headset"></i> الدعم الفني</h4>
-                <a href="https://wa.me/201014804695" class="whatsapp-btn">دعم فني 1</a>
-                <a href="https://wa.me/201014806596" class="whatsapp-btn">دعم فني 2</a>
-            </div>
-            <div>
-                <h4><i class="fas fa-building"></i> الإدارة والاستفسارات</h4>
-                <a href="https://wa.me/201008063749" class="whatsapp-btn" style="background:#34495e;">تواصل مع الإدارة</a>
-            </div>
-        </div>
-    </footer>
-
-    <div id="cart-modal" class="modal"><div class="modal-content"><span onclick="closeModals()" style="float:left; cursor:pointer; font-size: 1.5rem;">&times;</span><h3>السلة 🛒</h3><div id="cart-items"></div><div id="cart-total" style="margin:15px 0; font-weight:bold;"></div><button class="btn-add-cart" onclick="checkout()">تأكيد الطلب (واتساب)</button></div></div>
-    <div id="orders-modal" class="modal"><div class="modal-content"><span onclick="closeModals()" style="float:left; cursor:pointer; font-size: 1.5rem;">&times;</span><h3>طلباتي 📂</h3><div id="orders-list"></div></div></div>
 
     <script>
+        // Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCGfQ35NTyNysJqeHcMGlaWQYqQ80_ecVE",
             authDomain: "trendy-production-c6d33.firebaseapp.com",
             projectId: "trendy-production-c6d33",
-            storageBucket: "trendy-production-c6d33.firebasestorage.app",
-            messagingSenderId: "991761563640",
+            databaseURL: "https://trendy-production-c6d33-default-rtdb.firebaseio.com",
+            storageBucket: "trendy-production-c6d33.appspot.com",
             appId: "1:991761563640:web:2867e0a2cd16df78d3a00d"
         };
-
         firebase.initializeApp(firebaseConfig);
+
         const auth = firebase.auth();
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
+        const db = firebase.database();
+        const admins = ["ayhia4254@gmail.com", "rfthsynrmdan@gmail.com", "husseinramadanarafa22@gmail.com", "trendyproduction166@gmail.com","adhemyahia2@gmail.com"];
+        const IMGBB_API_KEY = "553dfd44418af770ea7ab27ad9f68fa5";
 
-        let cart = [];
-        let orders = JSON.parse(localStorage.getItem('trendy_orders')) || [];
-
-        function loginWithGoogle() { auth.signInWithPopup(provider).then(() => location.reload()); }
-        function logout() { auth.signOut().then(() => location.reload()); }
-
-        auth.onAuthStateChanged((user) => {
+        // Auth Listener
+        auth.onAuthStateChanged(user => {
             if (user) {
-                document.getElementById('login-area').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
-                document.getElementById('user-nav').style.display = 'flex';
-                document.getElementById('footer-section').style.display = 'block';
-                document.getElementById('user-name').innerText = user.displayName;
-                document.getElementById('user-photo').src = user.photoURL;
+                document.getElementById('login-box').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+
+                db.ref('all_users/' + user.uid).on('value', snap => {
+                    const userData = snap.val();
+                    if(userData) {
+                        const uPic = userData.photo || user.photoURL || 'https://via.placeholder.com/120';
+                        const uName = userData.name || user.displayName;
+
+                        document.getElementById('my-pic').src = uPic;
+                        document.getElementById('head-user-pic').src = uPic;
+                        document.getElementById('head-user-name').innerText = uName;
+                        document.getElementById('my-name-input').value = uName;
+                    }
+                });
+
+                db.ref('all_users/' + user.uid).update({
+                    name: user.displayName,
+                    email: user.email,
+                    uid: user.uid,
+                    lastSeen: new Date().toLocaleString('ar-EG')
+                });
+
+                if(admins.includes(user.email)) {
+                    document.getElementById('admin-zone').style.display = 'block';
+                    loadUsersForAdmin();
+                }
+
+                initRealtimeListeners(user.uid);
             }
         });
 
-        function addToCart(name, price) { cart.push({name, price}); updateCartUI(); alert("تمت الإضافة للسلة!"); }
-        function updateCartUI() {
-            document.getElementById('cart-count').innerText = cart.length;
-            document.getElementById('cart-items').innerHTML = cart.map((item, i) => `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom: 1px solid #222;"><span>${item.name}</span><span>${item.price} EGP <i class="fas fa-trash" onclick="cart.splice(${i},1);updateCartUI();" style="color:red; cursor:pointer;"></i></span></div>`).join('');
-            document.getElementById('cart-total').innerText = `الإجمالي: ${cart.reduce((s, i) => s + i.price, 0)} EGP`;
+        function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+        function logout() { auth.signOut().then(() => location.reload()); }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+
+        function openPage(id) {
+            document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            window.scrollTo(0,0);
+            if(window.innerWidth < 768) toggleSidebar();
         }
-        function showCart() { document.getElementById('cart-modal').style.display = 'block'; }
-        function showOrders() { 
-            document.getElementById('orders-modal').style.display = 'block';
-            document.getElementById('orders-list').innerHTML = orders.length ? orders.map(o => `<div style="background:#1a1f3c; padding:10px; border-radius:10px; margin-bottom:10px;">${o.date}<br>${o.items}<br><b>${o.total} EGP</b></div>`).join('') : "لا يوجد طلبات.";
+
+        // --- نظام الرفع الجديد ImgBB ---
+        async function uploadProfilePic() {
+            const file = document.getElementById('pic-input').files[0];
+            if(!file) return;
+            alert("جاري تحديث صورتك... يرجى الانتظار");
+            const formData = new FormData();
+            formData.append("image", file);
+            try {
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
+                const data = await response.json();
+                if(data.success) {
+                    const url = data.data.url;
+                    await auth.currentUser.updateProfile({ photoURL: url });
+                    await db.ref('all_users/' + auth.currentUser.uid).update({ photo: url });
+                    alert("تم تحديث الصورة بنجاح!");
+                }
+            } catch (e) { alert("خطأ في الاتصال بسيرفر الصور"); }
         }
-        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+
+        async function postToForum() {
+            const text = document.getElementById('forum-msg').value;
+            const file = document.getElementById('forum-img').files[0];
+            if(!text && !file) return;
+            let url = "";
+            if(file) {
+                alert("جاري رفع صورة المنشور...");
+                const formData = new FormData();
+                formData.append("image", file);
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
+                const data = await res.json();
+                if(data.success) url = data.data.url;
+            }
+            db.ref('forum').push({
+                userName: auth.currentUser.displayName,
+                userPic: auth.currentUser.photoURL || 'https://via.placeholder.com/45',
+                uid: auth.currentUser.uid,
+                text: text,
+                img: url,
+                likesCount: 0,
+                isAdmin: admins.includes(auth.currentUser.email),
+                date: Date.now(),
+                isPinned: false
+            });
+            document.getElementById('forum-msg').value = '';
+            document.getElementById('forum-img').value = '';
+        }
+
+        function togglePin(postId, currentState) {
+            db.ref('forum/' + postId).update({ isPinned: !currentState });
+        }
+
+        function initRealtimeListeners(uid) {
+            db.ref('products').on('value', snap => {
+                const grid = document.getElementById('products-grid');
+                grid.innerHTML = '';
+                snap.forEach(child => {
+                    const p = child.val();
+                    grid.innerHTML += `
+                        <div class="card ${p.style === 'promo' ? 'promo' : ''}">
+                            <h3>${p.title}</h3>
+                            <p style="font-size: 13px; color: #ccc;">${p.desc}</p>
+                            <div style="font-size:24px; color:var(--blue); font-weight:bold; margin: 15px 0;">${p.price} EGP</div>
+                            <button class="btn-pay" onclick="addToCart('${p.title}', ${p.price})">إضافة للسلة</button>
+                            ${admins.includes(auth.currentUser.email) ? `<button class="btn-delete-admin" onclick="db.ref('products/${child.key}').remove()">حذف المنتج</button>` : ''}
+                        </div>`;
+                });
+            });
+
+            db.ref('forum').on('value', snap => {
+                const list = document.getElementById('forum-list');
+                const posts = [];
+                snap.forEach(c => { posts.push({id: c.key, ...c.val()}); });
+                posts.sort((a,b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0) || b.date - a.date);
+                list.innerHTML = '';
+                posts.forEach(f => {
+                    const myLike = f.likesData && f.likesData[auth.currentUser.uid];
+                    const isAdmin = admins.includes(auth.currentUser.email);
+                    let repliesHTML = '';
+                    if(f.replies) { Object.values(f.replies).forEach(r => { repliesHTML += `<div class="reply-box"><b>${r.name}:</b> ${r.msg}</div>`; }); }
+                    list.innerHTML += `
+                        <div class="status-card ${f.isAdmin ? 'admin-post' : ''} ${f.isPinned ? 'pinned-post' : ''}">
+                            ${f.isPinned ? '<div class="pin-badge"><i class="fas fa-thumbtack"></i></div>' : ''}
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+                                <img src="${f.userPic}" style="width:38px; height:38px; border-radius:50%; object-fit:cover; border:1px solid var(--blue);">
+                                <div><div style="font-weight:bold;">${f.userName}</div><small style="opacity:0.5; font-size:10px;">${new Date(f.date).toLocaleString('ar-EG')}</small></div>
+                                <div style="margin-right:auto; display: flex; gap: 10px;">
+                                    ${isAdmin ? `<i class="fas fa-thumbtack" style="color:${f.isPinned ? 'var(--gold)' : '#555'}; cursor:pointer;" onclick="togglePin('${f.id}', ${f.isPinned})"></i>` : ''}
+                                    ${isAdmin ? `<i class="fas fa-trash" style="color:#ff4757; cursor:pointer;" onclick="if(confirm('حذف؟')) db.ref('forum/${f.id}').remove()"></i>` : ''}
+                                </div>
+                            </div>
+                            <p style="line-height:1.6; white-space: pre-wrap;">${f.text}</p>
+                            ${f.img ? `<img src="${f.img}" style="max-width:100%; border-radius:15px; margin: 10px 0;">` : ''}
+                            <div style="margin-top:15px; display:flex; gap:25px; border-top: 1px solid rgba(255,255,255,0.1); padding-top:12px;">
+                                <span onclick="toggleLike('${f.id}')" style="cursor:pointer; color:${myLike ? 'var(--blue)' : 'white'};"><i class="fas fa-thumbs-up"></i> ${f.likesCount || 0}</span>
+                                <span onclick="replyPost('${f.id}')" style="cursor:pointer;"><i class="fas fa-reply"></i> رد</span>
+                            </div>
+                            <div id="replies-${f.id}">${repliesHTML}</div>
+                        </div>`;
+                });
+            });
+
+            db.ref('all_users/' + uid + '/waiting').on('value', snap => renderStatusList(snap, 'wait-list', 'orange'));
+            db.ref('all_users/' + uid + '/history').on('value', snap => renderStatusList(snap, 'history-list', 'green'));
+            renderCart();
+        }
+
+        function toggleLike(postId) {
+            const uid = auth.currentUser.uid;
+            db.ref('forum/' + postId).once('value', snap => {
+                let f = snap.val(); let likes = f.likesData || {}; let count = f.likesCount || 0;
+                if(likes[uid]) { delete likes[uid]; count--; } else { likes[uid] = true; count++; }
+                db.ref('forum/' + postId).update({ likesData: likes, likesCount: Math.max(0, count) });
+            });
+        }
+
+        function replyPost(postId) {
+            const msg = prompt("اكتب ردك:");
+            if(msg) db.ref('forum/' + postId + '/replies').push({ name: auth.currentUser.displayName, msg: msg, date: Date.now() });
+        }
+
+        function addToCart(title, price) {
+            db.ref('all_users/' + auth.currentUser.uid + '/cart_live').push({title, price});
+            alert("تمت الإضافة للسلة!");
+        }
+
+        function renderCart() {
+            db.ref('all_users/' + auth.currentUser.uid + '/cart_live').on('value', snap => {
+                const div = document.getElementById('cart-content');
+                let html = ''; let total = 0;
+                snap.forEach(c => { const item = c.val(); html += `<div class="status-card" style="display:flex; justify-content:space-between;"><span>${item.title}</span><span>${item.price} EGP</span></div>`; total += parseInt(item.price); });
+                div.innerHTML = html + (html ? `<h3>الإجمالي: ${total} EGP</h3><button class="btn-pay" onclick="checkout()">إرسال الطلب</button>` : '<p>سلتك فارغة</p>');
+            });
+        }
+
         function checkout() {
-            if(!cart.length) return;
-            const total = cart.reduce((s, i) => s + i.price, 0);
-            const items = cart.map(i => i.name).join(' + ');
-            orders.unshift({date: new Date().toLocaleString('ar-EG'), items, total});
-            localStorage.setItem('trendy_orders', JSON.stringify(orders));
-            window.open(`https://wa.me/201008063749?text=طلب جديد من: ${auth.currentUser.displayName}%0Aالمنتجات: ${items}%0Aالإجمالي: ${total} EGP`);
-            cart = []; updateCartUI(); closeModals();
+            db.ref('all_users/' + auth.currentUser.uid + '/cart_live').once('value', snap => {
+                let items = []; snap.forEach(c => items.push(c.val().title));
+                const orderText = items.join(' + ');
+                db.ref('all_users/' + auth.currentUser.uid + '/waiting').push({ items: orderText, date: new Date().toLocaleString('ar-EG') });
+                db.ref('all_users/' + auth.currentUser.uid + '/cart_live').remove();
+                window.open(`https://wa.me/201008063749?text=طلب جديد: ${orderText}`);
+            });
+        }
+
+        function saveProfileName() {
+            const newName = document.getElementById('my-name-input').value;
+            if(newName) { auth.currentUser.updateProfile({ displayName: newName }).then(() => { db.ref('all_users/' + auth.currentUser.uid).update({ name: newName }); alert("تم الحفظ!"); }); }
+        }
+
+        function renderStatusList(snap, elementId, borderColor) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = '';
+            snap.forEach(child => { const data = child.val(); container.innerHTML += `<div class="status-card" style="border-right-color:${borderColor};"><b>${data.items}</b><br><small>${data.date}</small></div>`; });
+        }
+
+        function publishProduct() {
+            const t = document.getElementById('p-title').value, p = document.getElementById('p-price').value, d = document.getElementById('p-desc').value, s = document.getElementById('p-style').value;
+            if(t && p) db.ref('products').push({ title: t, price: p, desc: d, style: s }).then(() => { alert("تم النشر!"); openPage('home'); });
+        }
+
+        // --- تحديث لوحة الإدارة لمشاهدة (السلة - الانتظار - الفواتير) ---
+        function loadUsersForAdmin() {
+            const searchTerm = document.getElementById('search-user-input').value.toLowerCase();
+            db.ref('all_users').once('value', snap => {
+                const container = document.getElementById('all-users-list');
+                container.innerHTML = '';
+                snap.forEach(child => {
+                    const u = child.val();
+                    const name = u.name ? u.name.toLowerCase() : "";
+                    const email = u.email ? u.email.toLowerCase() : "";
+
+                    if(name.includes(searchTerm) || email.includes(searchTerm)) {
+                        const userPic = u.photo || 'https://via.placeholder.com/50';
+                        container.innerHTML += `
+                            <div class="status-card">
+                                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                                    <img src="${userPic}" class="admin-user-img">
+                                    <div>
+                                        <b style="font-size: 16px;">${u.name}</b><br>
+                                        <small style="color: var(--blue);">${u.email}</small>
+                                    </div>
+                                </div>
+                                <div style="margin-top:10px;">
+                                    <button class="admin-action-btn" style="background:#00d2ff;" onclick="adminViewDetails('${u.uid}', 'cart_live', 'السلة الحالية')">السلة</button>
+                                    <button class="admin-action-btn" style="background:orange;" onclick="adminViewDetails('${u.uid}', 'waiting', 'الطلبات المنتظرة')">الانتظار</button>
+                                    <button class="admin-action-btn" style="background:green;" onclick="adminViewDetails('${u.uid}', 'history', 'الفواتير السابقة')">الفواتير</button>
+                                </div>
+                                <div id="admin-detail-${u.uid}" style="display:none; margin-top:10px; background:rgba(0,0,0,0.2); padding:10px; border-radius:10px;"></div>
+                            </div>`;
+                    }
+                });
+            });
+        }
+
+        function adminViewDetails(uid, path, title) {
+            const box = document.getElementById('admin-detail-' + uid);
+            box.style.display = 'block';
+            db.ref('all_users/' + uid + '/' + path).once('value', snap => {
+                let html = `<b>${title}:</b><br>`;
+                if(!snap.exists()) { html += 'لا يوجد بيانات.'; }
+                snap.forEach(item => {
+                    const data = item.val();
+                    const content = data.items || data.title || "بيانات غير معروفة";
+                    html += `• ${content} ${path === 'waiting' ? `<button onclick="activateOrder('${uid}', '${item.key}', '${content}')">تفعيل ✅</button>` : ''}<br>`;
+                });
+                box.innerHTML = html;
+            });
+        }
+
+        function activateOrder(uid, key, items) {
+            db.ref('all_users/' + uid + '/history').push({ items, date: new Date().toLocaleString('ar-EG') });
+            db.ref('all_users/' + uid + '/waiting/' + key).remove();
+            alert("تم التفعيل ونقل الفاتورة!");
+            adminViewDetails(uid, 'waiting', 'الطلبات المنتظرة');
         }
     </script>
 </body>
