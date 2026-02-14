@@ -1,17 +1,12 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta name="description" content="Trendy Production - المتجر الرسمي لأفضل الخدمات والاشتراكات. جودة، ضمان، وسرعة في التنفيذ.">
-<meta property="og:title" content="Trendy Production - Pro v7.5">
-<meta property="og:description" content="اطلب خدماتك الآن من المتجر الرسمي لـ Trendy Production.">
-<meta property="og:image" content="https://trendyproduction166-art.github.io/Store/logo.png">
-<meta property="og:url" content="https://trendyproduction166-art.github.io/Store/">
-<meta name="theme-color" content="#9d50bb">
-    <link rel="icon" type="image/png" href="logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trendy Production - Pro v7.5</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Trendy Production - Ultimate Business Suite v5.0</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;800;900&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
 
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
@@ -19,662 +14,1106 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
 
     <style>
+        /* =======================================================================
+           1. CSS CONFIGURATION & VARIABLES
+           ======================================================================= */
         :root {
-            --bg: #050a18;
-            --blue: #00d2ff;
-            --purple: #9d50bb;
-            --glass: rgba(255, 255, 255, 0.08);
-            --gold: #ffd700;
+            /* الألوان الأساسية */
+            --bg-main: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-panel: rgba(30, 41, 59, 0.9);
+
+            /* ألوان البراند */
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --secondary-color: #8b5cf6;
+
+            /* ألوان الحالة وأنواع المنتجات */
+            --accent-gold: #f59e0b;
+            --accent-neon: #06b6d4;
+            --special-orange: #f97316; /* للمنتجات المميزة */
+            --discount-red: #dc2626;   /* للخصومات */
+
+            /* ألوان التواصل */
+            --whatsapp-green: #25D366;
+            --whatsapp-dark: #128C7E;
+            --vodafone-red: #E60000;
+
+            /* النصوص والحدود */
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-glass: 1px solid rgba(255, 255, 255, 0.08);
+
+            /* المؤثرات */
+            --shadow-card: 0 10px 20px -5px rgba(0, 0, 0, 0.6);
+            --glow-primary: 0 0 20px rgba(59, 130, 246, 0.4);
+            --glow-orange: 0 0 20px rgba(249, 115, 22, 0.4);
+            --glow-red: 0 0 20px rgba(220, 38, 38, 0.4);
+        }
+
+        /* =======================================================================
+           2. GLOBAL RESETS & ANIMATIONS
+           ======================================================================= */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Cairo', sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            margin: 0;
-            background: var(--bg);
-            color: white;
-            direction: rtl;
+            background-color: var(--bg-main);
+            color: var(--text-light);
+            min-height: 100vh;
             overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.5s;
         }
 
-        /* Sidebar System */
+        /* تخصيص شريط التمرير */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px; }
+
+        h1, h2, h3, h4, h5 { font-family: 'Tajawal', sans-serif; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+        button { cursor: pointer; border: none; font-family: 'Cairo', sans-serif; transition: 0.3s; }
+
+        /* الأنيميشن */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes pulseBorder { 0% { border-color: rgba(255,255,255,0.1); } 50% { border-color: var(--primary-color); } 100% { border-color: rgba(255,255,255,0.1); } }
+
+        /* =======================================================================
+           3. SIDEBAR & NAVIGATION
+           ======================================================================= */
         .sidebar {
             position: fixed;
-            left: -280px;
             top: 0;
-            width: 260px;
+            right: 0; /* في العربية */
+            width: 300px;
             height: 100%;
-            background: #0a0f1e;
-            border-right: 1px solid var(--blue);
-            transition: 0.3s ease-in-out;
-            z-index: 9999;
-            padding: 20px;
-        }
-
-        .sidebar.active { left: 0; }
-
-        .sidebar-item {
-            padding: 15px;
-            margin: 8px 0;
-            border-radius: 12px;
-            cursor: pointer;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(15px);
+            border-left: var(--border-glass);
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2000;
             display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: 0.3s;
-            background: rgba(255,255,255,0.02);
+            flex-direction: column;
+            overflow-y: auto;
+            box-shadow: -5px 0 30px rgba(0,0,0,0.6);
         }
 
-        .sidebar-item:hover {
-            background: var(--glass);
-            color: var(--blue);
-            transform: scale(1.02);
+        /* دعم اللغات LTR */
+        html[lang="en"] .sidebar, html[lang="fr"] .sidebar, html[lang="es"] .sidebar {
+            right: auto; left: 0; transform: translateX(-100%); border-left: none; border-right: var(--border-glass);
+        }
+        html[lang="en"] .menu-btn, html[lang="fr"] .menu-btn, html[lang="es"] .menu-btn {
+            right: auto; left: 20px;
         }
 
-        .menu-toggle {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            font-size: 26px;
-            cursor: pointer;
-            z-index: 10000;
-            color: var(--blue);
-            background: #0a0f1e;
-            padding: 5px 12px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
+        .sidebar.active { transform: translateX(0); }
 
-        /* Home User Header */
-        .home-user-card {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: var(--glass);
-            padding: 12px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            border: 1px solid rgba(0, 210, 255, 0.3);
-            width: fit-content;
-            margin: 0 0 30px auto;
-            transition: 0.3s;
-        }
-
-        .home-user-card:hover {
-            background: rgba(0, 210, 255, 0.1);
-            border-color: var(--blue);
-        }
-
-        .home-user-card img {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--blue);
-        }
-
-        /* Content Layout */
-        .content-section {
-            display: none;
-            padding: 80px 20px;
-            max-width: 1100px;
-            margin: 0 auto;
-            animation: fadeIn 0.4s ease;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .card {
-            background: var(--glass);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 20px;
-            width: 280px;
+        .sidebar-header {
+            padding: 30px;
             text-align: center;
+            background-size: cover;
+            background-position: center;
             position: relative;
-            transition: 0.3s;
+        }
+        .sidebar-header::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to top, var(--bg-secondary), transparent);
         }
 
-        .card:hover { transform: translateY(-5px); border-color: var(--blue); }
-
-        .promo { border: 2px solid #ff4757; }
-        .promo::after {
-            content: "عرض خاص";
-            position: absolute;
-            top: -10px;
-            right: 10px;
-            background: #ff4757;
-            padding: 2px 8px;
-            border-radius: 5px;
-            font-size: 11px;
+        .logo-img {
+            width: 110px; height: 110px;
+            border-radius: 50%;
+            border: 3px solid var(--primary-color);
+            box-shadow: var(--glow-primary);
+            position: relative; z-index: 2;
+            background: #fff; padding: 2px;
+            object-fit: contain;
         }
 
-        .btn-pay {
-            background: linear-gradient(45deg, var(--blue), var(--purple));
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            width: 100%;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .btn-delete-admin {
-            background: #ff4757;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 8px;
-            width: 100%;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 8px;
-            font-size: 12px;
-        }
-
-        /* Forum Styling */
-        .status-card {
-            background: rgba(255,255,255,0.05);
+        /* قسم Trendy المميز في السايدبار */
+        .trendy-box {
+            margin: 15px;
             padding: 20px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px dashed var(--accent-gold);
             border-radius: 15px;
-            margin-bottom: 15px;
-            border-right: 4px solid var(--blue);
+            text-align: center;
             position: relative;
         }
+        .trendy-box h4 { color: var(--accent-gold); margin-bottom: 8px; font-size: 0.9rem; letter-spacing: 1px; }
+        .trendy-box p { font-size: 0.8rem; color: #cbd5e1; line-height: 1.5; }
 
-        .admin-post {
-            border: 2px solid var(--gold) !important;
-            background: rgba(255, 215, 0, 0.05) !important;
-        }
-
-        .pinned-post {
-            border-right: 6px solid var(--gold) !important;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);
-        }
-
-        .pin-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: var(--gold);
-            font-size: 18px;
-        }
-
-        .reply-box {
-            margin-right: 40px;
-            border-right: 2px solid var(--blue);
-            padding: 10px 15px;
-            font-size: 13px;
-            background: rgba(255,255,255,0.03);
-            margin-top: 8px;
-            border-radius: 8px;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: #1a1f3c;
-            border: 1px solid #333;
-            color: white;
+        /* تغيير اللغة */
+        .lang-selector {
+            margin: 0 15px 15px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
             border-radius: 10px;
-            box-sizing: border-box;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .lang-select {
+            background: transparent; color: white; border: none; font-weight: bold; width: 100%;
+        }
+        .lang-select option { background: var(--bg-secondary); color: white; }
+
+        .nav-links { flex: 1; padding: 10px; }
+        .nav-item {
+            display: flex; align-items: center; gap: 15px;
+            padding: 14px 20px;
+            color: var(--text-muted);
+            border-radius: 12px;
+            margin-bottom: 6px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.15), transparent);
+            color: var(--primary-color);
+            padding-right: 25px;
+        }
+        html[lang="en"] .nav-item:hover { padding-right: 20px; padding-left: 25px; }
+
+        .menu-btn {
+            position: fixed; top: 20px; right: 20px;
+            width: 45px; height: 45px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
+            display: flex; justify-content: center; align-items: center;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            z-index: 2001;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border: var(--border-glass);
         }
 
-        footer {
-            background: #000;
-            padding: 40px 20px;
+        /* =======================================================================
+           4. MAIN CONTENT
+           ======================================================================= */
+        .main-container {
+            padding: 80px 20px 100px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .section { display: none; animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .section.active { display: block; }
+
+        .page-header { text-align: center; margin-bottom: 50px; }
+        .page-header h2 {
+            font-size: 2.2rem;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        /* =======================================================================
+           5. PRODUCTS CARDS (TYPES: NORMAL, SPECIAL, DISCOUNT)
+           ======================================================================= */
+        .products-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+            transition: all 0.4s ease;
+        }
+
+        /* ستايل المنتج الخاص (Special) */
+        .product-card.p-special {
+            border: 1px solid var(--special-orange);
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.15);
+        }
+        .product-card.p-special::before {
+            content: 'SPECIAL OFFER';
+            position: absolute; top: 15px; left: -30px;
+            background: var(--special-orange); color: white;
+            padding: 5px 30px; font-size: 0.7rem; font-weight: bold;
+            transform: rotate(-45deg); z-index: 10;
+        }
+
+        /* ستايل الخصم (Discount) */
+        .product-card.p-discount {
+            border: 1px solid var(--discount-red);
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.15);
+        }
+        .product-card.p-discount::before {
+            content: 'LIMITED SALE';
+            position: absolute; top: 15px; left: -30px;
+            background: var(--discount-red); color: white;
+            padding: 5px 30px; font-size: 0.7rem; font-weight: bold;
+            transform: rotate(-45deg); z-index: 10;
+        }
+
+        .product-card:hover { transform: translateY(-10px); }
+
+        .p-img-box { height: 240px; width: 100%; overflow: hidden; position: relative; }
+        .p-img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .product-card:hover .p-img-box img { transform: scale(1.1); }
+
+        .p-info { padding: 20px; text-align: center; }
+        .p-title { font-size: 1.1rem; margin-bottom: 5px; color: white; }
+        .p-price { font-size: 1.6rem; color: var(--accent-gold); font-weight: 800; margin-bottom: 15px; font-family: 'Oswald', sans-serif; }
+
+        .btn-view {
+            width: 100%; padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white; border-radius: 10px;
+            font-weight: bold; transition: 0.3s;
+        }
+        .product-card.p-special .btn-view { border-color: var(--special-orange); color: var(--special-orange); }
+        .product-card.p-discount .btn-view { border-color: var(--discount-red); color: var(--discount-red); }
+
+        .btn-view:hover { background: white; color: black !important; }
+
+        /* =======================================================================
+           6. SUPPORT BUTTONS (BOTTOM)
+           ======================================================================= */
+        .support-area-wrapper {
+            margin-top: 80px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .support-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        .support-btn {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 10px; padding: 20px;
+            border-radius: 15px;
+            background: var(--bg-secondary);
+            border: var(--border-glass);
+            color: var(--text-muted);
+            transition: 0.3s;
             text-align: center;
-            border-top: 1px solid #222;
-            margin-top: 50px;
+        }
+        .support-btn:hover { transform: translateY(-5px); color: white; border-color: var(--primary-color); }
+        .support-btn i { font-size: 1.8rem; margin-bottom: 5px; }
+
+        /* =======================================================================
+           7. FORUM & COMMUNITY
+           ======================================================================= */
+        .forum-container { max-width: 850px; margin: 0 auto; }
+        .forum-input-wrapper {
+            background: var(--bg-secondary); padding: 25px;
+            border-radius: 20px; margin-bottom: 40px;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: var(--shadow-card);
+        }
+        .forum-textarea {
+            width: 100%; background: rgba(0,0,0,0.3); border: none;
+            padding: 15px; color: white; border-radius: 12px;
+            min-height: 100px; resize: vertical; margin-bottom: 15px;
         }
 
-        .wa-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #25d366;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 8px;
-            margin: 5px;
-            font-weight: bold;
+        .post-card {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 16px; padding: 20px;
+            margin-bottom: 25px; position: relative;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        .post-card.pinned {
+            border: 1px solid var(--accent-gold);
+            background: linear-gradient(to bottom, rgba(245, 158, 11, 0.05), rgba(30, 41, 59, 0.8));
         }
 
-        .admin-action-btn {
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-size: 12px;
-            margin: 4px;
-            font-weight: bold;
+        .admin-badge-icon {
+            color: var(--accent-gold); margin-right: 5px; font-size: 0.9rem;
+        }
+        .post-author-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); }
+
+        /* =======================================================================
+           8. ADMIN & TABLES
+           ======================================================================= */
+        .dashboard-panel {
+            background: var(--bg-secondary);
+            padding: 30px; border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; }
+        .form-input, .form-select {
+            width: 100%; padding: 12px;
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+            color: white; border-radius: 10px;
         }
 
-        /* New Admin Styles */
-        .admin-user-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: 2px solid var(--blue);
-            object-fit: cover;
+        .table-responsive { overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        .data-table th { text-align: right; padding: 15px; color: var(--primary-color); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .data-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        /* =======================================================================
+           9. AUTH SCREEN
+           ======================================================================= */
+        .auth-overlay {
+            position: fixed; inset: 0; z-index: 5000;
+            background: #000; display: flex;
+            justify-content: center; align-items: center;
+            background-size: cover; background-position: center;
+        }
+        .auth-card {
+            background: rgba(15, 23, 42, 0.85);
+            padding: 60px 40px; border-radius: 30px;
+            text-align: center; backdrop-filter: blur(20px);
+            width: 90%; max-width: 480px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 0 60px rgba(59, 130, 246, 0.2);
         }
 
-        #search-user-input {
-            border: 1px solid var(--blue);
-            margin-bottom: 20px;
-            background: rgba(0, 210, 255, 0.05);
+        /* =======================================================================
+           10. MODALS
+           ======================================================================= */
+        .modal-wrap {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 3000; display: none;
+            justify-content: center; align-items: center;
+            padding: 20px; backdrop-filter: blur(5px);
         }
+        .modal-box {
+            background: var(--bg-secondary);
+            width: 100%; max-width: 900px;
+            border-radius: 25px; overflow: hidden;
+            display: flex; flex-direction: column;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        @media(min-width: 800px) { .modal-box { flex-direction: row; height: 600px; } }
+
+        .btn-main {
+            background: var(--primary-color); color: white; padding: 12px 25px;
+            border-radius: 10px; font-weight: bold; display: inline-flex; align-items: center; gap: 10px;
+        }
+        .btn-main:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+        .btn-danger { background: var(--discount-red); color: white; padding: 8px 15px; border-radius: 8px; }
+
     </style>
 </head>
 <body>
 
-    <div class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+    <div class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
 
-    <nav class="sidebar" id="sidebar">
-        <div style="text-align: center; margin-bottom: 25px;">
-    <img src="logo.png" style="width: 140px; border-radius: 20px; border: 2px solid #9d50bb; box-shadow: 0 0 15px rgba(157, 80, 187, 0.5);">
-</div>
-        <div class="sidebar-item" onclick="openPage('home')"><i class="fas fa-home"></i> الرئيسية</div>
-        <div class="sidebar-item" onclick="openPage('profile')"><i class="fas fa-user-edit"></i> الملف الشخصي</div>
-        <div class="sidebar-item" onclick="openPage('cart')"><i class="fas fa-shopping-basket"></i> السلة</div>
-        <div class="sidebar-item" onclick="openPage('wait')"><i class="fas fa-spinner"></i> الانتظار</div>
-        <div class="sidebar-item" onclick="openPage('history')"><i class="fas fa-file-invoice-dollar"></i> فواتير سابقة</div>
-        <div class="sidebar-item" onclick="openPage('forum')"><i class="fas fa-comments"></i> المنتدى والاقتراحات</div>
-        <div class="sidebar-item" onclick="openPage('about')"><i class="fas fa-info-circle"></i> عن Trendy</div>
-
-        <div id="admin-zone" style="display:none; border-top: 1px solid var(--gold); margin-top: 20px; padding-top: 15px;">
-            <p style="color:var(--gold); font-size:12px; margin-bottom:10px; letter-spacing: 1px;">لوحة التحكم</p>
-            <div class="sidebar-item" onclick="openPage('adm-add')"><i class="fas fa-plus-square"></i> إضافة منتج</div>
-            <div class="sidebar-item" onclick="openPage('adm-users')"><i class="fas fa-users"></i> قاعدة المستخدمين</div>
+    <nav class="sidebar" id="appSidebar">
+        <div class="sidebar-header" id="sidebarBanner">
+            <img src="https://i.ibb.co/LzY7m9n/trendy-logo.png" alt="Trendy" class="logo-img">
+            <h3 style="margin-top:10px;">TRENDY SUITE</h3>
+            <p style="color: var(--primary-color); font-size: 0.8rem; letter-spacing: 2px;">V5.0 ULTIMATE</p>
         </div>
 
-        <button onclick="logout()" style="width:100%; margin-top:30px; padding:12px; background:#ff4757; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">تسجيل الخروج</button>
+        <div class="lang-selector">
+            <i class="fas fa-globe" style="color:var(--text-muted)"></i>
+            <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
+                <option value="ar">العربية (Arabic)</option>
+                <option value="en">English (US)</option>
+                <option value="fr">Français</option>
+                <option value="es">Español</option>
+            </select>
+        </div>
+
+        <div class="trendy-box">
+            <h4><i class="fas fa-star"></i> TRENDY NEWS</h4>
+            <p id="trendyMsgSidebar">مرحباً بك في الإصدار الخامس. تم تحديث واجهة المستخدم وإضافة ميزات جديدة للأعضاء المميزين.</p>
+        </div>
+
+        <div class="nav-links">
+            <div class="nav-item active" onclick="nav('home')"><i class="fas fa-home"></i> <span data-i18n="home">الرئيسية</span></div>
+            <div class="nav-item" onclick="nav('forum')"><i class="fas fa-comments"></i> <span data-i18n="forum">المنتدى</span></div>
+            <div class="nav-item" onclick="nav('cart')"><i class="fas fa-shopping-bag"></i> <span data-i18n="cart">السلة</span></div>
+            <div class="nav-item" onclick="nav('orders')"><i class="fas fa-clock"></i> <span data-i18n="pending">طلبات الانتظار</span></div>
+            <div class="nav-item" onclick="nav('invoices')"><i class="fas fa-file-invoice-dollar"></i> <span data-i18n="history">الأرشيف</span></div>
+            <div class="nav-item" onclick="nav('profile')"><i class="fas fa-user-circle"></i> <span data-i18n="profile">حسابي</span></div>
+
+            <div id="adminPanelLinks" style="display: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 10px; padding-top: 10px;">
+                <div style="padding: 0 20px; font-size: 0.7rem; color: var(--accent-gold); margin-bottom: 5px;">ADMINISTRATION</div>
+                <div class="nav-item" onclick="nav('admin-products')"><i class="fas fa-box"></i> إدارة المنتجات</div>
+                <div class="nav-item" onclick="nav('admin-users')"><i class="fas fa-users-cog"></i> إدارة الأعضاء</div>
+            </div>
+
+            <div id="superAdminLinks" style="display: none;">
+                <div class="nav-item" onclick="nav('super-settings')"><i class="fas fa-cogs"></i> إعدادات الموقع</div>
+                <div class="nav-item" onclick="nav('super-admins')"><i class="fas fa-user-shield"></i> المديرين</div>
+            </div>
+        </div>
+
+        <button onclick="logout()" style="margin: 20px; padding: 15px; background: rgba(220, 38, 38, 0.1); color: var(--discount-red); border-radius: 10px; font-weight: bold;">
+            <i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">خروج</span>
+        </button>
     </nav>
 
-    <div id="login-box" style="text-align:center; padding-top:25vh;">
-        <h1 style="font-size: 3.5rem; letter-spacing: 5px; color: var(--blue); margin-bottom: 0;">TRENDY</h1>
-        <p style="margin-bottom: 35px; color: #888; font-weight: 300; letter-spacing: 2px;">PRODUCTION SERVICES</p>
-        <button onclick="login()" style="padding:16px 50px; border-radius:50px; cursor:pointer; font-weight:bold; background:#fff; border:none; box-shadow: 0 10px 30px rgba(0,0,0,0.4); transition: 0.3s; font-size: 16px;">
-            <i class="fab fa-google" style="margin-left: 10px; color: #db4437;"></i> الدخول بواسطة Google
-        </button>
+    <div class="auth-overlay" id="loginScreen">
+        <div class="auth-card">
+            <img src="https://i.ibb.co/LzY7m9n/trendy-logo.png" width="120" style="margin-bottom: 25px;">
+            <h2 style="font-size: 2rem; margin-bottom: 10px;">Welcome Back</h2>
+            <p style="color: #94a3b8; margin-bottom: 40px;">سجل دخولك الآن للوصول الكامل</p>
+
+            <button onclick="loginWithGoogle()" class="btn-main" style="width: 100%; justify-content: center; background: white; color: black;">
+                <i class="fab fa-google" style="color: #DB4437; font-size: 1.2rem;"></i> Continue with Google
+            </button>
+        </div>
     </div>
 
-    <div id="main-app" style="display:none;">
+    <main class="main-container" id="mainApp" style="display:none;">
 
-        <section id="home" class="content-section" style="display:block;">
-            <div class="home-user-card" onclick="openPage('profile')">
-                <img id="head-user-pic" src="https://via.placeholder.com/45">
-                <div>
-                    <div id="head-user-name" style="font-weight: bold; font-size: 14px;">تحميل...</div>
-                    <small style="color: var(--blue); font-size: 10px;">عرض الملف الشخصي</small>
+        <section id="home" class="section active">
+            <div class="page-header">
+                <h2 data-i18n="services_center">مركز الخدمات والمنتجات</h2>
+                <p data-i18n="choose_best">اكتشف أحدث العروض الحصرية لدينا</p>
+            </div>
+
+            <div class="products-container" id="productsGrid"></div>
+
+            <div class="support-area-wrapper">
+                <h3 style="text-align:center; margin-bottom:25px; color:var(--text-muted);">
+                    <i class="fas fa-headset"></i> <span data-i18n="need_help">هل تحتاج مساعدة؟</span>
+                </h3>
+                <div class="support-grid" id="supportButtonsArea">
+                    </div>
+            </div>
+        </section>
+
+        <section id="forum" class="section">
+            <div class="page-header">
+                <h2 data-i18n="community">مجتمع تريندي</h2>
+                <p>شارك أفكارك وتواصل مع الإدارة</p>
+            </div>
+
+            <div class="forum-container">
+                <div class="forum-input-wrapper">
+                    <textarea id="forumMsg" class="forum-textarea" placeholder="اكتب رسالتك هنا..."></textarea>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="position:relative;">
+                            <input type="file" id="forumImgUpload" style="display:none;" onchange="document.getElementById('fName').innerText = this.files[0].name">
+                            <label for="forumImgUpload" style="cursor:pointer; color:var(--primary-color); display:flex; gap:5px; align-items:center;">
+                                <i class="fas fa-image fa-lg"></i> <span id="fName">إرفاق صورة</span>
+                            </label>
+                        </div>
+                        <button onclick="postToForum()" class="btn-main">نشر <i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+                <div id="forumPostsFeed"></div>
+            </div>
+        </section>
+
+        <section id="cart" class="section">
+            <div class="page-header"><h2 data-i18n="cart_title">سلة المشتريات</h2></div>
+            <div class="dashboard-panel">
+                <table class="data-table">
+                    <thead><tr><th>المنتج</th><th>السعر</th><th>إجراء</th></tr></thead>
+                    <tbody id="cartTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="orders" class="section">
+            <div class="page-header"><h2>طلبات قيد الانتظار</h2></div>
+            <div class="dashboard-panel" id="waitingListContainer"></div>
+        </section>
+
+        <section id="invoices" class="section">
+            <div class="page-header"><h2>سجل المشتريات</h2></div>
+            <div class="dashboard-panel" id="invoicesListContainer"></div>
+        </section>
+
+        <section id="profile" class="section">
+            <div class="page-header"><h2>الملف الشخصي</h2></div>
+            <div class="dashboard-panel" style="text-align:center; max-width:500px; margin:0 auto;">
+                <img id="myProfilePic" src="" style="width:120px; height:120px; border-radius:50%; margin-bottom:20px; border:3px solid var(--primary-color);">
+                <h3 id="myProfileName">User</h3>
+                <p id="myProfileEmail" style="color:var(--text-muted);">email@gmail.com</p>
+            </div>
+        </section>
+
+        <section id="admin-products" class="section">
+            <div class="page-header"><h2>إضافة منتج جديد</h2></div>
+            <div class="dashboard-panel" style="max-width:700px; margin:0 auto;">
+                <div class="form-group">
+                    <label class="form-label">نوع العرض</label>
+                    <select id="newProdType" class="form-select">
+                        <option value="normal">منتج عادي (Standard)</option>
+                        <option value="special">عرض خاص (لون برتقالي)</option>
+                        <option value="discount">خصم لفترة (لون أحمر)</option>
+                    </select>
+                </div>
+                <div class="form-group"><input type="text" id="newProdTitle" placeholder="اسم المنتج" class="form-input"></div>
+                <div class="form-group"><input type="number" id="newProdPrice" placeholder="السعر (EGP)" class="form-input"></div>
+                <div class="form-group"><textarea id="newProdDesc" placeholder="الوصف الكامل" class="form-input" rows="4"></textarea></div>
+                <div class="form-group">
+                    <label class="form-label">صورة المنتج</label>
+                    <input type="file" id="newProdImg" class="form-input">
+                </div>
+                <div class="form-group"><input type="text" id="newProdWa" placeholder="رقم واتس اب مخصص (اختياري)" class="form-input"></div>
+                <button onclick="addNewProduct()" class="btn-main" style="width:100%;">نشر المنتج الآن</button>
+            </div>
+        </section>
+
+        <section id="admin-users" class="section">
+            <div class="page-header"><h2>إدارة المستخدمين</h2></div>
+            <div class="dashboard-panel">
+                <input type="text" oninput="searchUsers(this.value)" placeholder="بحث بالاسم..." class="form-input" style="margin-bottom:20px;">
+                <div id="adminUsersList"></div>
+            </div>
+        </section>
+
+        <section id="super-settings" class="section">
+            <div class="page-header"><h2>إعدادات الموقع (Super)</h2></div>
+            <div class="dashboard-panel">
+
+                <h3 style="color:var(--accent-gold); margin-bottom:15px;">أرقام الدعم الفني</h3>
+                <div class="form-group" style="display:flex; gap:10px;">
+                    <input type="text" id="newSupportName" placeholder="الاسم (مثال: صيانة)" class="form-input">
+                    <input type="text" id="newSupportPhone" placeholder="الرقم" class="form-input">
+                    <button onclick="addSupportNumberSlot()" class="btn-main">إضافة</button>
+                </div>
+                <div id="supportNumsSettings" style="margin-bottom:30px;"></div>
+
+                <hr style="border-color:rgba(255,255,255,0.1); margin:30px 0;">
+
+                <h3 style="color:var(--accent-gold); margin-bottom:15px;">المظهر والصور</h3>
+
+                <div class="form-group">
+                    <label class="form-label">رسالة Trendy (Sidebar)</label>
+                    <textarea id="settingTrendyMsg" class="form-input"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">صورة خلفية تسجيل الدخول (رفع)</label>
+                    <input type="file" id="settingLoginBgFile" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">صورة ترويسة القائمة (رفع)</label>
+                    <input type="file" id="settingSidebarBgFile" class="form-input">
+                </div>
+
+                <button onclick="saveSiteSettings()" class="btn-main" style="background:var(--success);">حفظ التغييرات</button>
+            </div>
+        </section>
+
+        <section id="super-admins" class="section">
+            <div class="page-header"><h2>صلاحيات المديرين</h2></div>
+            <div class="dashboard-panel">
+                <div class="form-group" style="display:flex; gap:10px;">
+                    <input type="email" id="newAdminEmail" placeholder="example@gmail.com" class="form-input">
+                    <button onclick="addAdmin()" class="btn-main">تعيين كمسؤول</button>
+                </div>
+                <ul id="adminsListUI" style="margin-top:20px;"></ul>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="modal-wrap" id="productModal">
+        <div class="modal-box">
+            <div style="flex:1; background:#000; position:relative; overflow:hidden; display:flex; justify-content:center; align-items:center;" id="modal3DContainer">
+                <img src="" id="modalImg" style="max-width:80%; max-height:80%; filter:drop-shadow(0 10px 20px rgba(0,0,0,0.5)); transition: transform 0.1s;">
+            </div>
+            <div style="flex:1; padding:40px; display:flex; flex-direction:column; justify-content:center;">
+                <h2 id="modalTitle" style="color:white; margin-bottom:10px;"></h2>
+                <h3 id="modalPrice" style="color:var(--accent-gold); margin-bottom:20px; font-size:2rem;"></h3>
+                <p id="modalDesc" style="color:#cbd5e1; line-height:1.7; margin-bottom:30px;"></p>
+                <div style="display:grid; gap:10px;">
+                    <button onclick="addToCartFromModal()" class="btn-main" style="justify-content:center;">إضافة للسلة</button>
+                    <button onclick="buyNowFromModal()" class="btn-main" style="justify-content:center; background:var(--whatsapp-green);">طلب عبر واتساب</button>
+                    <button onclick="document.getElementById('productModal').style.display='none'" class="btn-danger">إغلاق</button>
                 </div>
             </div>
-
-            <h2 style="text-align:center; font-size: 2.2rem; margin-bottom: 40px; text-shadow: 0 0 10px var(--blue);">المتجر الرسمي 🛒</h2>
-            <div id="products-grid" style="display:flex; flex-wrap:wrap; gap:25px; justify-content:center;"></div>
-        </section>
-
-        <section id="profile" class="content-section" style="text-align:center;">
-            <h2>إعدادات الحساب</h2>
-            <div style="position: relative; width: 140px; margin: 0 auto;">
-                <img id="my-pic" style="width:140px; height:140px; border-radius:50%; border:3px solid var(--blue); object-fit:cover; background: #222;">
-                <button onclick="document.getElementById('pic-input').click()" style="position: absolute; bottom: 5px; right: 5px; background: var(--blue); border: none; width: 40px; height: 40px; border-radius: 50%; color: white; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"><i class="fas fa-camera"></i></button>
-            </div>
-            <input type="file" id="pic-input" hidden onchange="uploadProfilePic()">
-
-            <div style="max-width: 400px; margin: 40px auto;">
-                <label style="display: block; text-align: right; margin-bottom: 8px; color: var(--blue);">الاسم الظاهر للمستخدم:</label>
-                <input type="text" id="my-name-input" placeholder="اكتب اسمك الجديد هنا">
-                <button onclick="saveProfileName()" class="btn-pay">حفظ التغييرات الجديدة</button>
-            </div>
-        </section>
-
-        <section id="cart" class="content-section">
-            <h2 style="text-align: center;">سلة المشتريات الخاصة بك</h2>
-            <div id="cart-content" style="max-width: 600px; margin: 0 auto;"></div>
-        </section>
-
-        <section id="wait" class="content-section">
-            <h2 style="text-align: center;">طلبات قيد المراجعة ⏳</h2>
-            <div id="wait-list" style="max-width: 600px; margin: 0 auto;"></div>
-        </section>
-
-        <section id="history" class="content-section">
-            <h2 style="text-align: center;">الفواتير التي تم تفعيلها ✅</h2>
-            <div id="history-list" style="max-width: 600px; margin: 0 auto;"></div>
-        </section>
-
-        <section id="forum" class="content-section">
-            <h2 style="text-align: center;">المنتدى والاقتراحات 💬</h2>
-            <div style="background: var(--glass); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
-                <textarea id="forum-msg" rows="4" placeholder="شاركنا رأيك، اقتراحك، أو استفسارك..."></textarea>
-                <div style="display:flex; gap:12px; align-items: center; margin-top: 10px;">
-                    <label for="forum-img" style="cursor: pointer; background: #1a1f3c; padding: 12px 20px; border-radius: 10px; border: 1px solid #333;"><i class="fas fa-image" style="color: var(--blue);"></i> إرفاق صورة</label>
-                    <input type="file" id="forum-img" accept="image/*" hidden>
-                    <button onclick="postToForum()" class="btn-pay" style="width:180px; margin-top:0; height: 46px;">نشر الآن</button>
-                </div>
-            </div>
-            <div id="forum-list" style="margin-top:40px;"></div>
-        </section>
-
-        <section id="about" class="content-section">
-            <div style="background:var(--glass); padding:40px; border-radius:25px; border:1px solid var(--blue); line-height:1.9; text-align:center;">
-                <h2 style="color:var(--blue); font-size: 2.2rem; margin-bottom: 25px;">أهلاً بيكم في Trendy Production 🚀</h2>
-                <p style="font-size: 17px;">احنا شركة مصرية بدأت بأشخاص هدفهم إنهم يوفروا لك أفضل "Services" في العالم وبأرخص الأسعار، وعشان إحنا عارفين إن خدمات كتير بقى أسعارها غالية أو مش متوفرة في مصر، قررنا نوفرها لكم بجودة عالية وبضمان كامل.</p>
-                <p style="font-size: 17px;">عارفين إن الأسعار بره بقت صعبة وعشان كده قررنا نوفر لك اشتراكات أصلية بأسعار خيالية، وبأمان تام لحسابك، وبإذن الله حلمنا هيكبر بيكم وبثقتكم فينا.</p>
-                <div style="margin-top: 35px; font-weight: bold; color: var(--gold); font-size: 18px; border-top: 1px solid rgba(255,215,0,0.2); padding-top: 20px;">Trendy Production - بنكبر بيكم!</div>
-            </div>
-        </section>
-
-        <section id="adm-add" class="content-section">
-            <h2>إضافة منتج جديد للمتجر</h2>
-            <input type="text" id="p-title" placeholder="اسم المنتج">
-            <input type="number" id="p-price" placeholder="السعر">
-            <textarea id="p-desc" placeholder="وصف المنتج"></textarea>
-            <select id="p-style">
-                <option value="normal">تصميم عادي</option>
-                <option value="promo">عرض خاص (إطار أحمر)</option>
-            </select>
-            <button onclick="publishProduct()" class="btn-pay">تأكيد ونشر</button>
-        </section>
-
-        <section id="adm-users" class="content-section">
-            <h2>لوحة إدارة الأعضاء والطلبات</h2>
-            <input type="text" id="search-user-input" placeholder="🔍 ابحث عن مستخدم بالاسم أو الإيميل..." oninput="loadUsersForAdmin()">
-            <div id="all-users-list"></div>
-        </section>
-
-        <footer>
-            <div style="margin-bottom:30px;">
-                <a href="https://wa.me/201014804695" class="wa-link"><i class="fab fa-whatsapp"></i> دعم فني 1</a>
-                <a href="https://wa.me/201014806596" class="wa-link"><i class="fab fa-whatsapp"></i> دعم فني 2</a>
-                <a href="https://wa.me/201008063749" class="wa-link" style="background:#444;"><i class="fas fa-user-shield"></i> الإدارة</a>
-            </div>
-            <p style="color:#ffd700; font-weight: bold; font-size: 16px;">للدفع عبر فودافون كاش: 01008063749</p>
-            <p style="margin-top: 25px; opacity: 0.5; font-size: 14px;">© 2026 Trendy Production. All Rights Reserved.</p>
-        </footer>
+        </div>
     </div>
 
     <script>
-        // Configuration
+        // ==========================================================
+        // 1. FIREBASE CONFIGURATION
+        // ==========================================================
         const firebaseConfig = {
             apiKey: "AIzaSyCGfQ35NTyNysJqeHcMGlaWQYqQ80_ecVE",
             authDomain: "trendy-production-c6d33.firebaseapp.com",
             projectId: "trendy-production-c6d33",
-            databaseURL: "https://trendy-production-c6d33-default-rtdb.firebaseio.com",
             storageBucket: "trendy-production-c6d33.appspot.com",
+            messagingSenderId: "991761563640",
             appId: "1:991761563640:web:2867e0a2cd16df78d3a00d"
         };
-        firebase.initializeApp(firebaseConfig);
-
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
-        const admins = ["ayhia4254@gmail.com", "rfthsynrmdan@gmail.com", "husseinramadanarafa22@gmail.com", "trendyproduction166@gmail.com","adhemyahia2@gmail.com"];
         const IMGBB_API_KEY = "553dfd44418af770ea7ab27ad9f68fa5";
+        const SUPER_ADMIN_EMAIL = "adhemyahia2@gmail.com";
 
-        // Auth Listener
-        auth.onAuthStateChanged(user => {
+        // Global Vars
+        let currentUser = null;
+        let isAdmin = false;
+        let isSuperAdmin = false;
+        let currentProductInModal = null;
+        let currentLang = 'ar';
+
+        // ==========================================================
+        // 2. TRANSLATION & LANGUAGE SYSTEM
+        // ==========================================================
+        const translations = {
+            ar: {
+                home: "الرئيسية", forum: "المنتدى", cart: "السلة", pending: "قيد الانتظار",
+                history: "الأرشيف", profile: "حسابي", logout: "خروج",
+                services_center: "مركز الخدمات والمنتجات", choose_best: "اختر ما يناسبك، وتواصل معنا فوراً",
+                need_help: "هل تحتاج مساعدة؟", community: "مجتمع تريندي", cart_title: "سلة المشتريات"
+            },
+            en: {
+                home: "Home", forum: "Forum", cart: "Cart", pending: "Pending Orders",
+                history: "History", profile: "Profile", logout: "Logout",
+                services_center: "Services & Products", choose_best: "Choose the best for you",
+                need_help: "Need Help?", community: "Trendy Community", cart_title: "Shopping Cart"
+            },
+            fr: {
+                home: "Accueil", forum: "Forum", cart: "Panier", pending: "En Attente",
+                history: "Historique", profile: "Profil", logout: "Déconnexion",
+                services_center: "Services et Produits", choose_best: "Choisissez le meilleur",
+                need_help: "Besoin d'aide?", community: "Communauté Trendy", cart_title: "Mon Panier"
+            },
+            es: {
+                home: "Inicio", forum: "Foro", cart: "Carrito", pending: "Pendiente",
+                history: "Historial", profile: "Perfil", logout: "Cerrar sesión",
+                services_center: "Servicios y Productos", choose_best: "Elige lo mejor",
+                need_help: "¿Necesitas ayuda?", community: "Comunidad Trendy", cart_title: "Carrito de compras"
+            }
+        };
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+            document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+
+            // تحديث النصوص
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(translations[lang][key]) el.innerText = translations[lang][key];
+            });
+        }
+
+        // ==========================================================
+        // 3. AUTHENTICATION LOGIC
+        // ==========================================================
+        auth.onAuthStateChanged(async (user) => {
             if (user) {
-                document.getElementById('login-box').style.display = 'none';
-                document.getElementById('main-app').style.display = 'block';
-
-                db.ref('all_users/' + user.uid).on('value', snap => {
-                    const userData = snap.val();
-                    if(userData) {
-                        const uPic = userData.photo || user.photoURL || 'https://via.placeholder.com/120';
-                        const uName = userData.name || user.displayName;
-
-                        document.getElementById('my-pic').src = uPic;
-                        document.getElementById('head-user-pic').src = uPic;
-                        document.getElementById('head-user-name').innerText = uName;
-                        document.getElementById('my-name-input').value = uName;
-                    }
-                });
-
-                db.ref('all_users/' + user.uid).update({
-                    name: user.displayName,
-                    email: user.email,
-                    uid: user.uid,
-                    lastSeen: new Date().toLocaleString('ar-EG')
-                });
-
-                if(admins.includes(user.email)) {
-                    document.getElementById('admin-zone').style.display = 'block';
-                    loadUsersForAdmin();
+                currentUser = user;
+                // التحقق من الحظر
+                const banCheck = await db.ref('banned_users/' + user.uid).once('value');
+                if(banCheck.exists()) {
+                    alert("Account Banned."); auth.signOut(); return;
                 }
 
-                initRealtimeListeners(user.uid);
+                // تحديث بيانات المستخدم
+                db.ref('users/' + user.uid).update({
+                    name: user.displayName,
+                    email: user.email,
+                    photo: user.photoURL,
+                    lastSeen: Date.now()
+                });
+
+                await checkAdminStatus();
+
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                document.getElementById('myProfilePic').src = user.photoURL;
+                document.getElementById('myProfileName').innerText = user.displayName;
+                document.getElementById('myProfileEmail').innerText = user.email;
+
+                // تحميل البيانات
+                loadSettings();
+                listenToProducts();
+                listenToForum();
+            } else {
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('mainApp').style.display = 'none';
             }
         });
 
-        function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-        function logout() { auth.signOut().then(() => location.reload()); }
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+        async function checkAdminStatus() {
+            // المدير العام
+            if (currentUser.email === SUPER_ADMIN_EMAIL) {
+                isSuperAdmin = true; isAdmin = true;
+                document.getElementById('superAdminLinks').style.display = 'block';
+            }
 
-        function openPage(id) {
-            document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
-            document.getElementById(id).style.display = 'block';
-            window.scrollTo(0,0);
-            if(window.innerWidth < 768) toggleSidebar();
+            // المدراء الآخرين
+            const adminsSnap = await db.ref('admins').once('value');
+            if (adminsSnap.exists()) {
+                const list = adminsSnap.val();
+                Object.values(list).forEach(email => {
+                    if(email === currentUser.email) isAdmin = true;
+                });
+            }
+
+            if (isAdmin) {
+                document.getElementById('adminPanelLinks').style.display = 'block';
+                if(isSuperAdmin) loadAdminsList();
+            }
         }
 
-        // --- نظام الرفع الجديد ImgBB ---
-        async function uploadProfilePic() {
-            const file = document.getElementById('pic-input').files[0];
-            if(!file) return;
-            alert("جاري تحديث صورتك... يرجى الانتظار");
+        function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(e => alert(e.message));
+        }
+        function logout() { auth.signOut().then(() => location.reload()); }
+
+        // ==========================================================
+        // 4. SETTINGS & SUPPORT NUMBERS (FIXED & DYNAMIC)
+        // ==========================================================
+        function loadSettings() {
+            db.ref('settings').on('value', snap => {
+                const s = snap.val() || {};
+
+                // الخلفيات
+                if(s.loginBg) document.getElementById('loginScreen').style.backgroundImage = `url('${s.loginBg}')`;
+                if(s.sidebarBg) document.getElementById('sidebarBanner').style.backgroundImage = `url('${s.sidebarBg}')`;
+                if(s.trendyMsg) document.getElementById('trendyMsgSidebar').innerText = s.trendyMsg;
+
+                // تعبئة حقول الإعدادات للأدمن
+                if(isSuperAdmin) {
+                    document.getElementById('settingTrendyMsg').value = s.trendyMsg || '';
+                }
+
+                // الأزرار
+                renderSupportButtons(s.supportNumbers);
+            });
+        }
+
+        function renderSupportButtons(dynamicNums) {
+            const area = document.getElementById('supportButtonsArea');
+            area.innerHTML = '';
+
+            // 1. الأرقام الثابتة المطلوبة (مع إخفاء الرقم نصياً)
+            const fixedNums = [
+                { name: "الإدارة والاستفسار", phone: "01008063749", icon: "user-tie", color: "var(--primary-color)" },
+                { name: "Vodafone Cash", phone: "01008063749", icon: "money-bill-wave", color: "var(--vodafone-red)" },
+                { name: "الدعم الفني 2", phone: "01014806596", icon: "headset", color: "var(--accent-neon)" }
+            ];
+
+            fixedNums.forEach(n => {
+                area.innerHTML += `
+                    <a href="https://wa.me/2${n.phone}" target="_blank" class="support-btn" style="border-color:${n.color}">
+                        <i class="fas fa-${n.icon}" style="color:${n.color}"></i>
+                        <span style="font-weight:bold; color:white;">${n.name}</span>
+                        <span style="font-size:0.7rem; opacity:0;">${n.phone}</span> </a>
+                `;
+            });
+
+            // 2. الأرقام الديناميكية المضافة
+            if(dynamicNums) {
+                Object.keys(dynamicNums).forEach(key => {
+                    const data = dynamicNums[key];
+                    area.innerHTML += `
+                        <a href="https://wa.me/2${data.phone}" target="_blank" class="support-btn">
+                            <i class="fab fa-whatsapp" style="color:#25D366"></i>
+                            <span style="font-weight:bold; color:white;">${data.name}</span>
+                        </a>
+                    `;
+                });
+
+                // Render Settings List
+                if(isSuperAdmin) {
+                    const setDiv = document.getElementById('supportNumsSettings');
+                    setDiv.innerHTML = '';
+                    Object.keys(dynamicNums).forEach(key => {
+                        setDiv.innerHTML += `
+                            <div style="display:flex; justify-content:space-between; padding:10px; background:rgba(255,255,255,0.05); margin-bottom:5px;">
+                                <span>${dynamicNums[key].name} - ${dynamicNums[key].phone}</span>
+                                <button onclick="db.ref('settings/supportNumbers/${key}').remove()" style="color:red">حذف</button>
+                            </div>
+                        `;
+                    });
+                }
+            }
+        }
+
+        // إضافة رقم جديد للقاعدة
+        function addSupportNumberSlot() {
+            const name = document.getElementById('newSupportName').value;
+            const phone = document.getElementById('newSupportPhone').value;
+            if(name && phone) {
+                db.ref('settings/supportNumbers').push({ name, phone });
+                document.getElementById('newSupportName').value = '';
+                document.getElementById('newSupportPhone').value = '';
+            }
+        }
+
+        // ==========================================================
+        // 5. UPLOAD LOGIC & SAVING SETTINGS
+        // ==========================================================
+        async function uploadImage(file) {
             const formData = new FormData();
             formData.append("image", file);
             try {
-                const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
-                const data = await response.json();
-                if(data.success) {
-                    const url = data.data.url;
-                    await auth.currentUser.updateProfile({ photoURL: url });
-                    await db.ref('all_users/' + auth.currentUser.uid).update({ photo: url });
-                    alert("تم تحديث الصورة بنجاح!");
-                }
-            } catch (e) { alert("خطأ في الاتصال بسيرفر الصور"); }
-        }
-
-        async function postToForum() {
-            const text = document.getElementById('forum-msg').value;
-            const file = document.getElementById('forum-img').files[0];
-            if(!text && !file) return;
-            let url = "";
-            if(file) {
-                alert("جاري رفع صورة المنشور...");
-                const formData = new FormData();
-                formData.append("image", file);
-                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
-                const data = await res.json();
-                if(data.success) url = data.data.url;
+                const req = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {method:'POST', body:formData});
+                const res = await req.json();
+                return res.data.url;
+            } catch(e) {
+                console.error(e);
+                alert("فشل رفع الصورة");
+                return null;
             }
-            db.ref('forum').push({
-                userName: auth.currentUser.displayName,
-                userPic: auth.currentUser.photoURL || 'https://via.placeholder.com/45',
-                uid: auth.currentUser.uid,
-                text: text,
-                img: url,
-                likesCount: 0,
-                isAdmin: admins.includes(auth.currentUser.email),
-                date: Date.now(),
-                isPinned: false
+        }
+
+        async function saveSiteSettings() {
+            const msg = document.getElementById('settingTrendyMsg').value;
+            const loginFile = document.getElementById('settingLoginBgFile').files[0];
+            const sideFile = document.getElementById('settingSidebarBgFile').files[0];
+
+            let updates = { trendyMsg: msg };
+
+            if(loginFile) {
+                const url = await uploadImage(loginFile);
+                if(url) updates.loginBg = url;
+            }
+            if(sideFile) {
+                const url = await uploadImage(sideFile);
+                if(url) updates.sidebarBg = url;
+            }
+
+            db.ref('settings').update(updates);
+            alert("تم حفظ الإعدادات!");
+        }
+
+        // ==========================================================
+        // 6. PRODUCT MANAGEMENT (TYPES & COLORS)
+        // ==========================================================
+        async function addNewProduct() {
+            const title = document.getElementById('newProdTitle').value;
+            const price = document.getElementById('newProdPrice').value;
+            const desc = document.getElementById('newProdDesc').value;
+            const type = document.getElementById('newProdType').value; // normal, special, discount
+            const file = document.getElementById('newProdImg').files[0];
+            const wa = document.getElementById('newProdWa').value;
+
+            if(!title || !price || !file) { alert("يرجى ملء البيانات الأساسية والصورة"); return; }
+
+            const imgUrl = await uploadImage(file);
+            if(!imgUrl) return;
+
+            db.ref('products').push({
+                title, price, desc, type, image: imgUrl, whatsapp: wa
             });
-            document.getElementById('forum-msg').value = '';
-            document.getElementById('forum-img').value = '';
+            alert("تم نشر المنتج بنجاح");
+            nav('home');
         }
 
-        function togglePin(postId, currentState) {
-            db.ref('forum/' + postId).update({ isPinned: !currentState });
-        }
-
-        function initRealtimeListeners(uid) {
+        function listenToProducts() {
             db.ref('products').on('value', snap => {
-                const grid = document.getElementById('products-grid');
+                const grid = document.getElementById('productsGrid');
                 grid.innerHTML = '';
                 snap.forEach(child => {
                     const p = child.val();
+                    const key = child.key;
+
+                    // تحديد الكلاس بناءً على النوع
+                    let classType = '';
+                    if(p.type === 'special') classType = 'p-special';
+                    if(p.type === 'discount') classType = 'p-discount';
+
                     grid.innerHTML += `
-                        <div class="card ${p.style === 'promo' ? 'promo' : ''}">
-                            <h3>${p.title}</h3>
-                            <p style="font-size: 13px; color: #ccc;">${p.desc}</p>
-                            <div style="font-size:24px; color:var(--blue); font-weight:bold; margin: 15px 0;">${p.price} EGP</div>
-                            <button class="btn-pay" onclick="addToCart('${p.title}', ${p.price})">إضافة للسلة</button>
-                            ${admins.includes(auth.currentUser.email) ? `<button class="btn-delete-admin" onclick="db.ref('products/${child.key}').remove()">حذف المنتج</button>` : ''}
-                        </div>`;
+                        <div class="product-card ${classType}">
+                            <div class="p-img-box"><img src="${p.image}"></div>
+                            <div class="p-info">
+                                <h3 class="p-title">${p.title}</h3>
+                                <div class="p-price">${p.price} EGP</div>
+                                <button onclick="openProductModal('${key}', '${p.title}', '${p.price}', '${p.image}', '${p.desc}', '${p.whatsapp||''}')" class="btn-view">
+                                    تفاصيل
+                                </button>
+                                ${isAdmin ? `<button onclick="db.ref('products/${key}').remove()" style="color:red; margin-top:5px; background:none; text-decoration:underline;">حذف المنتج</button>` : ''}
+                            </div>
+                        </div>
+                    `;
                 });
             });
+        }
 
-            db.ref('forum').on('value', snap => {
-                const list = document.getElementById('forum-list');
+        // مودال 3D
+        function openProductModal(key, title, price, img, desc, wa) {
+            currentProductInModal = { key, title, price, img, wa };
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalPrice').innerText = price + " EGP";
+            document.getElementById('modalDesc').innerText = desc;
+            document.getElementById('modalImg').src = img;
+
+            const modal = document.getElementById('productModal');
+            modal.style.display = 'flex';
+
+            // حركة الماوس
+            const container = document.getElementById('modal3DContainer');
+            const imgEl = document.getElementById('modalImg');
+            container.onmousemove = (e) => {
+                const x = (window.innerWidth/2 - e.pageX)/15;
+                const y = (window.innerHeight/2 - e.pageY)/15;
+                imgEl.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+            };
+        }
+
+        function addToCartFromModal() {
+            if(!currentProductInModal) return;
+            db.ref(`carts/${currentUser.uid}`).push(currentProductInModal);
+            alert("تمت الإضافة للسلة");
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        function buyNowFromModal() {
+            if(!currentProductInModal) return;
+            const waNum = currentProductInModal.wa || '01014806596';
+            const msg = `أريد شراء: ${currentProductInModal.title} بسعر ${currentProductInModal.price}`;
+            window.open(`https://wa.me/2${waNum}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // ==========================================================
+        // 7. FORUM (USER DATA & ADMIN BADGE)
+        // ==========================================================
+        async function postToForum() {
+            const txt = document.getElementById('forumMsg').value;
+            const file = document.getElementById('forumImgUpload').files[0];
+
+            if(!txt && !file) return;
+
+            let imgUrl = null;
+            if(file) imgUrl = await uploadImage(file);
+
+            // التأكد من وجود البيانات
+            const uName = currentUser.displayName || 'User';
+            const uPic = currentUser.photoURL || 'https://i.ibb.co/LzY7m9n/trendy-logo.png';
+
+            const post = {
+                text: txt,
+                image: imgUrl,
+                author: uName,
+                authorPic: uPic,
+                uid: currentUser.uid,
+                date: Date.now(),
+                isAdmin: isAdmin,
+                pinned: false
+            };
+
+            db.ref('forum').push(post);
+            document.getElementById('forumMsg').value = '';
+            document.getElementById('forumImgUpload').value = '';
+            document.getElementById('fName').innerText = 'إرفاق صورة';
+        }
+
+        function listenToForum() {
+            db.ref('forum').limitToLast(50).on('value', snap => {
+                const feed = document.getElementById('forumPostsFeed');
+                feed.innerHTML = '';
                 const posts = [];
-                snap.forEach(c => { posts.push({id: c.key, ...c.val()}); });
-                posts.sort((a,b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0) || b.date - a.date);
-                list.innerHTML = '';
-                posts.forEach(f => {
-                    const myLike = f.likesData && f.likesData[auth.currentUser.uid];
-                    const isAdmin = admins.includes(auth.currentUser.email);
-                    let repliesHTML = '';
-                    if(f.replies) { Object.values(f.replies).forEach(r => { repliesHTML += `<div class="reply-box"><b>${r.name}:</b> ${r.msg}</div>`; }); }
-                    list.innerHTML += `
-                        <div class="status-card ${f.isAdmin ? 'admin-post' : ''} ${f.isPinned ? 'pinned-post' : ''}">
-                            ${f.isPinned ? '<div class="pin-badge"><i class="fas fa-thumbtack"></i></div>' : ''}
-                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
-                                <img src="${f.userPic}" style="width:38px; height:38px; border-radius:50%; object-fit:cover; border:1px solid var(--blue);">
-                                <div><div style="font-weight:bold;">${f.userName}</div><small style="opacity:0.5; font-size:10px;">${new Date(f.date).toLocaleString('ar-EG')}</small></div>
-                                <div style="margin-right:auto; display: flex; gap: 10px;">
-                                    ${isAdmin ? `<i class="fas fa-thumbtack" style="color:${f.isPinned ? 'var(--gold)' : '#555'}; cursor:pointer;" onclick="togglePin('${f.id}', ${f.isPinned})"></i>` : ''}
-                                    ${isAdmin ? `<i class="fas fa-trash" style="color:#ff4757; cursor:pointer;" onclick="if(confirm('حذف؟')) db.ref('forum/${f.id}').remove()"></i>` : ''}
+                snap.forEach(c => posts.push({k:c.key, ...c.val()}));
+                posts.sort((a,b) => (b.pinned - a.pinned) || (b.date - a.date)); // ترتيب حسب التثبيت ثم الوقت
+
+                posts.forEach(p => {
+                    const badge = p.isAdmin ? `<span class="admin-badge-icon"><i class="fas fa-crown"></i> Admin</span>` : '';
+                    const pinClass = p.pinned ? 'pinned' : '';
+                    const controls = (isAdmin || p.uid === currentUser.uid) ?
+                        `<div style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.05); padding-top:5px;">
+                            <button onclick="db.ref('forum/${p.k}').remove()" style="color:var(--discount-red); margin-left:10px;">حذف</button>
+                            ${isAdmin ? `<button onclick="db.ref('forum/${p.k}').update({pinned:${!p.pinned}})" style="color:var(--accent-gold);">تثبيت/فك</button>` : ''}
+                         </div>` : '';
+
+                    feed.innerHTML += `
+                        <div class="post-card ${pinClass}">
+                            <div style="display:flex; gap:15px; margin-bottom:10px;">
+                                <img src="${p.authorPic}" class="post-author-img">
+                                <div>
+                                    <div style="font-weight:bold; color:white;">${p.author} ${badge}</div>
+                                    <div style="font-size:0.7rem; color:#aaa;">${new Date(p.date).toLocaleString()}</div>
                                 </div>
                             </div>
-                            <p style="line-height:1.6; white-space: pre-wrap;">${f.text}</p>
-                            ${f.img ? `<img src="${f.img}" style="max-width:100%; border-radius:15px; margin: 10px 0;">` : ''}
-                            <div style="margin-top:15px; display:flex; gap:25px; border-top: 1px solid rgba(255,255,255,0.1); padding-top:12px;">
-                                <span onclick="toggleLike('${f.id}')" style="cursor:pointer; color:${myLike ? 'var(--blue)' : 'white'};"><i class="fas fa-thumbs-up"></i> ${f.likesCount || 0}</span>
-                                <span onclick="replyPost('${f.id}')" style="cursor:pointer;"><i class="fas fa-reply"></i> رد</span>
-                            </div>
-                            <div id="replies-${f.id}">${repliesHTML}</div>
-                        </div>`;
+                            <p style="line-height:1.6;">${p.text || ''}</p>
+                            ${p.image ? `<img src="${p.image}" style="max-width:100%; border-radius:10px; margin-top:10px;">` : ''}
+                            ${controls}
+                        </div>
+                    `;
                 });
             });
-
-            db.ref('all_users/' + uid + '/waiting').on('value', snap => renderStatusList(snap, 'wait-list', 'orange'));
-            db.ref('all_users/' + uid + '/history').on('value', snap => renderStatusList(snap, 'history-list', 'green'));
-            renderCart();
         }
 
-        function toggleLike(postId) {
-            const uid = auth.currentUser.uid;
-            db.ref('forum/' + postId).once('value', snap => {
-                let f = snap.val(); let likes = f.likesData || {}; let count = f.likesCount || 0;
-                if(likes[uid]) { delete likes[uid]; count--; } else { likes[uid] = true; count++; }
-                db.ref('forum/' + postId).update({ likesData: likes, likesCount: Math.max(0, count) });
+        // ==========================================================
+        // 8. ADMIN MANAGEMENT LOGIC
+        // ==========================================================
+        function loadAdminsList() {
+            db.ref('admins').on('value', snap => {
+                const ul = document.getElementById('adminsListUI');
+                ul.innerHTML = '';
+                snap.forEach(c => {
+                    ul.innerHTML += `
+                        <li style="display:flex; justify-content:space-between; padding:10px; background:rgba(0,0,0,0.2); margin-bottom:5px;">
+                            ${c.val()}
+                            <button onclick="db.ref('admins/${c.key}').remove()" style="color:red"><i class="fas fa-trash"></i></button>
+                        </li>`;
+                });
             });
         }
-
-        function replyPost(postId) {
-            const msg = prompt("اكتب ردك:");
-            if(msg) db.ref('forum/' + postId + '/replies').push({ name: auth.currentUser.displayName, msg: msg, date: Date.now() });
+        function addAdmin() {
+            const email = document.getElementById('newAdminEmail').value;
+            if(email) db.ref('admins').push(email);
         }
 
-        function addToCart(title, price) {
-            db.ref('all_users/' + auth.currentUser.uid + '/cart_live').push({title, price});
-            alert("تمت الإضافة للسلة!");
-        }
-
-        function renderCart() {
-            db.ref('all_users/' + auth.currentUser.uid + '/cart_live').on('value', snap => {
-                const div = document.getElementById('cart-content');
-                let html = ''; let total = 0;
-                snap.forEach(c => { const item = c.val(); html += `<div class="status-card" style="display:flex; justify-content:space-between;"><span>${item.title}</span><span>${item.price} EGP</span></div>`; total += parseInt(item.price); });
-                div.innerHTML = html + (html ? `<h3>الإجمالي: ${total} EGP</h3><button class="btn-pay" onclick="checkout()">إرسال الطلب</button>` : '<p>سلتك فارغة</p>');
-            });
-        }
-
-        function checkout() {
-            db.ref('all_users/' + auth.currentUser.uid + '/cart_live').once('value', snap => {
-                let items = []; snap.forEach(c => items.push(c.val().title));
-                const orderText = items.join(' + ');
-                db.ref('all_users/' + auth.currentUser.uid + '/waiting').push({ items: orderText, date: new Date().toLocaleString('ar-EG') });
-                db.ref('all_users/' + auth.currentUser.uid + '/cart_live').remove();
-                window.open(`https://wa.me/201008063749?text=طلب جديد: ${orderText}`);
-            });
-        }
-
-        function saveProfileName() {
-            const newName = document.getElementById('my-name-input').value;
-            if(newName) { auth.currentUser.updateProfile({ displayName: newName }).then(() => { db.ref('all_users/' + auth.currentUser.uid).update({ name: newName }); alert("تم الحفظ!"); }); }
-        }
-
-        function renderStatusList(snap, elementId, borderColor) {
-            const container = document.getElementById(elementId);
+        // البحث عن المستخدمين
+        function searchUsers(query) {
+            const container = document.getElementById('adminUsersList');
             container.innerHTML = '';
-            snap.forEach(child => { const data = child.val(); container.innerHTML += `<div class="status-card" style="border-right-color:${borderColor};"><b>${data.items}</b><br><small>${data.date}</small></div>`; });
-        }
-
-        function publishProduct() {
-            const t = document.getElementById('p-title').value, p = document.getElementById('p-price').value, d = document.getElementById('p-desc').value, s = document.getElementById('p-style').value;
-            if(t && p) db.ref('products').push({ title: t, price: p, desc: d, style: s }).then(() => { alert("تم النشر!"); openPage('home'); });
-        }
-
-        // --- تحديث لوحة الإدارة لمشاهدة (السلة - الانتظار - الفواتير) ---
-        function loadUsersForAdmin() {
-            const searchTerm = document.getElementById('search-user-input').value.toLowerCase();
-            db.ref('all_users').once('value', snap => {
-                const container = document.getElementById('all-users-list');
-                container.innerHTML = '';
-                snap.forEach(child => {
-                    const u = child.val();
-                    const name = u.name ? u.name.toLowerCase() : "";
-                    const email = u.email ? u.email.toLowerCase() : "";
-
-                    if(name.includes(searchTerm) || email.includes(searchTerm)) {
-                        const userPic = u.photo || 'https://via.placeholder.com/50';
+            db.ref('users').once('value', snap => {
+                snap.forEach(u => {
+                    const user = u.val();
+                    if(user.name.toLowerCase().includes(query.toLowerCase())) {
                         container.innerHTML += `
-                            <div class="status-card">
-                                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
-                                    <img src="${userPic}" class="admin-user-img">
-                                    <div>
-                                        <b style="font-size: 16px;">${u.name}</b><br>
-                                        <small style="color: var(--blue);">${u.email}</small>
-                                    </div>
-                                </div>
-                                <div style="margin-top:10px;">
-                                    <button class="admin-action-btn" style="background:#00d2ff;" onclick="adminViewDetails('${u.uid}', 'cart_live', 'السلة الحالية')">السلة</button>
-                                    <button class="admin-action-btn" style="background:orange;" onclick="adminViewDetails('${u.uid}', 'waiting', 'الطلبات المنتظرة')">الانتظار</button>
-                                    <button class="admin-action-btn" style="background:green;" onclick="adminViewDetails('${u.uid}', 'history', 'الفواتير السابقة')">الفواتير</button>
-                                </div>
-                                <div id="admin-detail-${u.uid}" style="display:none; margin-top:10px; background:rgba(0,0,0,0.2); padding:10px; border-radius:10px;"></div>
-                            </div>`;
+                            <div style="background:rgba(255,255,255,0.05); padding:10px; margin-bottom:5px; border-radius:8px;">
+                                ${user.name} (${user.email})
+                                <button onclick="db.ref('banned_users/${u.key}').set(true)" style="color:red; float:left;">حظر</button>
+                            </div>
+                        `;
                     }
                 });
             });
         }
 
-        function adminViewDetails(uid, path, title) {
-            const box = document.getElementById('admin-detail-' + uid);
-            box.style.display = 'block';
-            db.ref('all_users/' + uid + '/' + path).once('value', snap => {
-                let html = `<b>${title}:</b><br>`;
-                if(!snap.exists()) { html += 'لا يوجد بيانات.'; }
-                snap.forEach(item => {
-                    const data = item.val();
-                    const content = data.items || data.title || "بيانات غير معروفة";
-                    html += `• ${content} ${path === 'waiting' ? `<button onclick="activateOrder('${uid}', '${item.key}', '${content}')">تفعيل ✅</button>` : ''}<br>`;
-                });
-                box.innerHTML = html;
-            });
-        }
+        // ==========================================================
+        // 9. UI NAVIGATION HELPERS
+        // ==========================================================
+        function nav(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(window.innerWidth < 800) document.getElementById('appSidebar').classList.remove('active');
 
-        function activateOrder(uid, key, items) {
-            db.ref('all_users/' + uid + '/history').push({ items, date: new Date().toLocaleString('ar-EG') });
-            db.ref('all_users/' + uid + '/waiting/' + key).remove();
-            alert("تم التفعيل ونقل الفاتورة!");
-            adminViewDetails(uid, 'waiting', 'الطلبات المنتظرة');
+            // تحميل البيانات الخاصة عند فتح القسم
+            if(id === 'cart') loadCart();
+            if(id === 'orders') loadPendingOrders();
+            if(id === 'invoices') loadHistory();
+        }
+        function toggleSidebar() { document.getElementById('appSidebar').classList.toggle('active'); }
+
+        // تحميل السلة (مختصر)
+        function loadCart() {
+            db.ref(`carts/${currentUser.uid}`).on('value', snap => {
+                const body = document.getElementById('cartTableBody');
+                body.innerHTML = '';
+                snap.forEach(c => {
+                    body.innerHTML += `<tr><td>${c.val().title}</td><td>${c.val().price}</td><td><i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="db.ref('carts/${currentUser.uid}/${c.key}').remove()"></i></td></tr>`;
+                });
+            });
         }
     </script>
 </body>
